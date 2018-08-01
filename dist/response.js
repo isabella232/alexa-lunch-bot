@@ -27,7 +27,8 @@ var AlexaResponse = /** @class */ (function () {
                     "contentDescription": "Textured grey background",
                     "sources": [
                         {
-                            "url": "https://upload.wikimedia.org/wikipedia/en/a/a9/Example.jpg"
+                            "url": "https://upload.wikimedia.org/wikipedia/en/a/a9/Example.jpg",
+                            "size": "MEDIUM"
                         }
                     ]
                 },
@@ -36,7 +37,8 @@ var AlexaResponse = /** @class */ (function () {
                     "contentDescription": "My favorite car",
                     "sources": [
                         {
-                            "url": "https://upload.wikimedia.org/wikipedia/en/a/a9/Example.jpg"
+                            "url": "https://upload.wikimedia.org/wikipedia/en/a/a9/Example.jpg",
+                            "size": "MEDIUM"
                         }
                     ]
                 },

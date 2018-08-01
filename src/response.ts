@@ -32,7 +32,8 @@ export class AlexaResponse {
 					"contentDescription": "Textured grey background",
 					"sources": [
 						{
-							"url": "https://upload.wikimedia.org/wikipedia/en/a/a9/Example.jpg"
+							"url": "https://upload.wikimedia.org/wikipedia/en/a/a9/Example.jpg",
+							"size": "MEDIUM"
 						}
 					]
 				},
@@ -41,7 +42,8 @@ export class AlexaResponse {
 					"contentDescription": "My favorite car",
 					"sources": [
 						{
-							"url": "https://upload.wikimedia.org/wikipedia/en/a/a9/Example.jpg"
+							"url": "https://upload.wikimedia.org/wikipedia/en/a/a9/Example.jpg",
+							"size": "MEDIUM"
 						}
 					]
 				},

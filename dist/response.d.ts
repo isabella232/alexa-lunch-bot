@@ -6,6 +6,7 @@ interface OutputSpeech {
 interface Response {
     outputSpeech: OutputSpeech;
     directives: any[];
+    card: any;
 }
 export declare class AlexaResponse {
     private data;

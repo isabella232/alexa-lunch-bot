@@ -72,7 +72,7 @@ app.post('/api', function (req, res) {
                         if (!(alexaRequest.type === 'IntentRequest')) return [3 /*break*/, 6];
                         intent = intents[alexaRequest.intent.name];
                         if (!intent) return [3 /*break*/, 4];
-                        return [4 /*yield*/, intent.execute(req)];
+                        return [4 /*yield*/, intent.execute(state, alexaRequest)];
                     case 3:
                         r = _a.sent();
                         return [3 /*break*/, 5];

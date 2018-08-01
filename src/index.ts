@@ -32,7 +32,7 @@ app.post('/api', (req, res) => {
 				const intent = intents[alexaRequest.intent.name];
 
 				if (intent)
-					r = await intent.execute(req);
+					r = await intent.execute(state, alexaRequest);
 				else
 					r.setSpeech("I'm not sure what to do.");
 			} else if (alexaRequest.type === 'SessionEndedRequest') {

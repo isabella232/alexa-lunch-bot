@@ -26,9 +26,15 @@ export class AlexaResponse {
 			"type": "Display.RenderTemplate",
 			"template": {
 				"type": "BodyTemplate2",
-				"token": "A2079",
 				"backButton": "VISIBLE",
-				"backgroundImage": "https://www.example.com/background-image1.png",
+				"backgroundImage": {
+					"contentDescription": "Textured grey background",
+					"sources": [
+						{
+							"url": "https://www.example.com/background-image1.png"
+						}
+					]
+				},
 				"title": "My Favorite Car",
 				"image": {
 					"contentDescription": "My favorite car",
@@ -52,7 +58,6 @@ export class AlexaResponse {
 						"type": "PlainText"
 					}
 				}
-
 			}
 		});
 	}

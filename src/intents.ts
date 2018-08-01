@@ -19,7 +19,7 @@ async function getAllSpots(): Promise<LunchSpot[]> {
 	connection.connect();
 
 	var options: LunchSpot[] = await (new Promise<LunchSpot[]>((resolve, reject) => {
-		connection.query('SELECT * FROM lunch_spots', function(error, results) {
+		connection.query('select * from lunch_spots order by lastSuggested ASC, score DESC limit 5', function(error, results) {
 			if (error) reject(error);
 
 			let spots: LunchSpot[] = [];

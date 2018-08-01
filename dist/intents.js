@@ -62,7 +62,7 @@ function getAllSpots() {
                     connection = mysql.createConnection(process.env.JAWSDB_URL);
                     connection.connect();
                     return [4 /*yield*/, (new Promise(function (resolve, reject) {
-                            connection.query('SELECT * FROM lunch_spots', function (error, results) {
+                            connection.query('select * from lunch_spots order by lastSuggested ASC, score DESC limit 5', function (error, results) {
                                 if (error)
                                     reject(error);
                                 var spots = [];

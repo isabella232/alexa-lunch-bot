@@ -51,6 +51,7 @@ intents['getidea'] = new Intents.GetIdeaIntent();
 intents['addidea'] = new Intents.AddIdeaIntent();
 intents['goodidea'] = new Intents.GoodIdeaIntent();
 intents['badidea'] = new Intents.BadIdeaIntent();
+intents['exit'] = new Intents.ExitIntent();
 app.post('/api', function (req, res) {
     var alexaContext = req.body.context;
     var alexaRequest = req.body.request;

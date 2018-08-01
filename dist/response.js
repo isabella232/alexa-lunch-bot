@@ -68,7 +68,12 @@ var AlexaResponse = /** @class */ (function () {
     };
     // If the user makes a follow up statement that doesn't match anything in our skill Alexa will say the "reprompt"
     AlexaResponse.prototype.setReprompt = function (msg) {
-        this.data.response.reprompt = msg;
+        this.data.response.reprompt = {
+            outputSpeech: {
+                type: "PlainText",
+                text: msg
+            }
+        };
     };
     // What should Alexa say, SSML not currently supported by this skill
     AlexaResponse.prototype.setSpeech = function (msg) {

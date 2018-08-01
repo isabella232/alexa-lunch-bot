@@ -8,7 +8,7 @@ interface Response {
 	outputSpeech: OutputSpeech;
 	directives: any[];
 	card: any;
-	reprompt: string;
+	reprompt: { outputSpeech: OutputSpeech };
 	shouldEndSession: boolean;
 };
 
@@ -94,7 +94,12 @@ export class AlexaResponse {
 
 	// If the user makes a follow up statement that doesn't match anything in our skill Alexa will say the "reprompt"
 	public setReprompt(msg: string) {
-		this.data.response.reprompt = msg;
+		this.data.response.reprompt = {
+			outputSpeech: {
+				type: "PlainText",
+				text: msg
+			}
+		};
 	}
 
 	// What should Alexa say, SSML not currently supported by this skill

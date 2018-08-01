@@ -49,7 +49,7 @@ var LaunchIntent = /** @class */ (function () {
                 console.log("set speech");
                 r.setSpeech("Hi, I can give you some lunch ideas!");
                 console.log("set end");
-                //r.setShouldEndSession(false)
+                r.setShouldEndSession(false);
                 console.log("set reprompt");
                 r.setReprompt('Try, "Where should I go for lunch"');
                 console.log("response done");

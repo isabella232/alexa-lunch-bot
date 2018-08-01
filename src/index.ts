@@ -32,7 +32,7 @@ app.post('/api', (req, res) => {
 			} else if (alexaRequest.type === 'IntentRequest') {
 				r = await intents[alexaRequest.intent.name].execute(req);
 			} else if (alexaRequest.type === 'SessionEndedRequest') {
-				r.setSpeech("Error");
+				r = await launchIntent.execute(req, alexaRequest);
 			}
 		} catch (err) {
 			console.log("Error while creating response.", err);

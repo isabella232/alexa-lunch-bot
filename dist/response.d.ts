@@ -8,7 +8,9 @@ interface Response {
     outputSpeech: OutputSpeech;
     directives: any[];
     card: any;
-    reprompt: string;
+    reprompt: {
+        outputSpeech: OutputSpeech;
+    };
     shouldEndSession: boolean;
 }
 interface AlexaDirective {

@@ -23,12 +23,9 @@ app.post('/api', (req, res) => {
 	let r = new AlexaResponse();
 
 	(async function() {
-		console.log("very start");
 		try {
 			if (alexaRequest.type === 'LaunchRequest') {
-				console.log("Doing launch");
 				r = await launchIntent.execute(req, alexaRequest);
-				console.log("Done launch");
 			} else if (alexaRequest.type === 'IntentRequest') {
 				r = await intents[alexaRequest.intent.name].execute(req);
 			} else if (alexaRequest.type === 'SessionEndedRequest') {
@@ -38,7 +35,6 @@ app.post('/api', (req, res) => {
 			console.log("Error while creating response.", err);
 		}
 
-		console.log("Sending data");
 		res.send(r.getData());
 	})();
 });

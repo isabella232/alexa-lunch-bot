@@ -36,27 +36,23 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var response_1 = require("./response");
+var images_1 = require("./images");
 var mysql = require("mysql");
 var LaunchIntent = /** @class */ (function () {
     function LaunchIntent() {
     }
     LaunchIntent.prototype.execute = function (httpRequest, alexaRequest) {
         return __awaiter(this, void 0, void 0, function () {
-            var r;
+            var r, directive;
             return __generator(this, function (_a) {
-                console.log("create response");
                 r = new response_1.AlexaResponse();
-                console.log("set speech");
                 r.setSpeech("Hi, I can give you some lunch ideas!");
-                console.log("set end");
                 r.setShouldEndSession(false);
-                console.log("set reprompt");
                 r.setReprompt('Try, "Where should I go for lunch"');
-                console.log("response done");
-                // const directive = new BodyTemplate1();
-                // directive.setBackgroundImage(getRandomImage());
-                // directive.setTitle('Lunch Bot');
-                // r.addDirective(directive);
+                directive = new response_1.BodyTemplate1();
+                directive.setBackgroundImage(images_1.getRandomImage());
+                directive.setTitle('Lunch Bot');
+                r.addDirective(directive);
                 return [2 /*return*/, r];
             });
         });

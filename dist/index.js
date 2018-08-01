@@ -58,36 +58,30 @@ app.post('/api', function (req, res) {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        console.log("very start");
-                        _a.label = 1;
+                        _a.trys.push([0, 7, , 8]);
+                        if (!(alexaRequest.type === 'LaunchRequest')) return [3 /*break*/, 2];
+                        return [4 /*yield*/, launchIntent.execute(req, alexaRequest)];
                     case 1:
-                        _a.trys.push([1, 8, , 9]);
-                        if (!(alexaRequest.type === 'LaunchRequest')) return [3 /*break*/, 3];
-                        console.log("Doing launch");
-                        return [4 /*yield*/, launchIntent.execute(req, alexaRequest)];
+                        r = _a.sent();
+                        return [3 /*break*/, 6];
                     case 2:
-                        r = _a.sent();
-                        console.log("Done launch");
-                        return [3 /*break*/, 7];
-                    case 3:
-                        if (!(alexaRequest.type === 'IntentRequest')) return [3 /*break*/, 5];
+                        if (!(alexaRequest.type === 'IntentRequest')) return [3 /*break*/, 4];
                         return [4 /*yield*/, intents[alexaRequest.intent.name].execute(req)];
+                    case 3:
+                        r = _a.sent();
+                        return [3 /*break*/, 6];
                     case 4:
-                        r = _a.sent();
-                        return [3 /*break*/, 7];
-                    case 5:
-                        if (!(alexaRequest.type === 'SessionEndedRequest')) return [3 /*break*/, 7];
+                        if (!(alexaRequest.type === 'SessionEndedRequest')) return [3 /*break*/, 6];
                         return [4 /*yield*/, launchIntent.execute(req, alexaRequest)];
-                    case 6:
+                    case 5:
                         r = _a.sent();
-                        _a.label = 7;
-                    case 7: return [3 /*break*/, 9];
-                    case 8:
+                        _a.label = 6;
+                    case 6: return [3 /*break*/, 8];
+                    case 7:
                         err_1 = _a.sent();
                         console.log("Error while creating response.", err_1);
-                        return [3 /*break*/, 9];
-                    case 9:
-                        console.log("Sending data");
+                        return [3 /*break*/, 8];
+                    case 8:
                         res.send(r.getData());
                         return [2 /*return*/];
                 }

@@ -82,7 +82,9 @@ export class AlexaResponse {
 
 	private data = {
 		version: "1.0",
-		response: <Response>{}
+		response: <Response>{
+			directives: []
+		}
 	};
 
 	// Should alexa end the skill after this response? Default is true

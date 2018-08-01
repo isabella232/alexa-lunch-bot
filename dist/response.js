@@ -57,7 +57,9 @@ var AlexaResponse = /** @class */ (function () {
     function AlexaResponse() {
         this.data = {
             version: "1.0",
-            response: {}
+            response: {
+                directives: []
+            }
         };
     }
     // Should alexa end the skill after this response? Default is true

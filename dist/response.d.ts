@@ -1,17 +1,34 @@
+/// <reference types="node" />
+import { URL } from "url";
 interface OutputSpeech {
     type: string;
     text: string;
-    ssml: string;
 }
 interface Response {
     outputSpeech: OutputSpeech;
     directives: any[];
     card: any;
+    reprompt: string;
+    shouldEndSession: boolean;
+}
+interface AlexaDirective {
+    getData(): any;
+}
+export declare class BodyTemplate1 implements AlexaDirective {
+    private data;
+    setBackgroundImage(url: URL): void;
+    setTitle(title: string): void;
+    setPrimaryContent(msg: string): void;
+    setSecondaryContent(msg: string): void;
+    setTertiaryContent(msg: string): void;
+    getData(): any;
 }
 export declare class AlexaResponse {
     private data;
+    setShouldEndSession(shouldEnd: boolean): void;
+    setReprompt(msg: string): void;
     setSpeech(msg: string): void;
-    addDirective(): void;
+    addDirective(directive: AlexaDirective): void;
     getData(): {
         version: string;
         response: Response;

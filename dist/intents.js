@@ -36,11 +36,34 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var response_1 = require("./response");
+var images_1 = require("./images");
 var mysql = require("mysql");
+var LaunchIntent = /** @class */ (function () {
+    function LaunchIntent() {
+    }
+    LaunchIntent.prototype.execute = function (httpRequest) {
+        return __awaiter(this, void 0, void 0, function () {
+            var r, directive;
+            return __generator(this, function (_a) {
+                r = new response_1.AlexaResponse();
+                r.setSpeech("Hi, I can give you some lunch ideas!");
+                r.setShouldEndSession(false);
+                r.setReprompt('Try, "Where should I go for lunch"');
+                directive = new response_1.BodyTemplate1();
+                directive.setBackgroundImage(images_1.getRandomImage(httpRequest.header['host']));
+                directive.setTitle('Lunch Bot');
+                r.addDirective(directive);
+                return [2 /*return*/, r];
+            });
+        });
+    };
+    return LaunchIntent;
+}());
+exports.LaunchIntent = LaunchIntent;
 var GetIdeaIntent = /** @class */ (function () {
     function GetIdeaIntent() {
     }
-    GetIdeaIntent.prototype.execute = function (handlerInput) {
+    GetIdeaIntent.prototype.execute = function (httpRequest) {
         return __awaiter(this, void 0, void 0, function () {
             var connection, options, selection, r;
             return __generator(this, function (_a) {
@@ -76,7 +99,7 @@ exports.GetIdeaIntent = GetIdeaIntent;
 var AddIdeaIntent = /** @class */ (function () {
     function AddIdeaIntent() {
     }
-    AddIdeaIntent.prototype.execute = function (handlerInput) {
+    AddIdeaIntent.prototype.execute = function (httpRequest, alexaRequest) {
         return __awaiter(this, void 0, void 0, function () {
             var r, connection, title_1, err_1;
             return __generator(this, function (_a) {
@@ -88,7 +111,7 @@ var AddIdeaIntent = /** @class */ (function () {
                         _a.label = 1;
                     case 1:
                         _a.trys.push([1, 3, 4, 5]);
-                        title_1 = handlerInput.intent.slots.spot.value;
+                        title_1 = alexaRequest.intent.slots.spot.value;
                         return [4 /*yield*/, (new Promise(function (resolve, reject) {
                                 connection.query('Insert into lunch_spots SET ?', { title: title_1 }, function (error) {
                                     if (error)
@@ -119,13 +142,12 @@ exports.AddIdeaIntent = AddIdeaIntent;
 var TestIntent = /** @class */ (function () {
     function TestIntent() {
     }
-    TestIntent.prototype.execute = function (handlerInput) {
+    TestIntent.prototype.execute = function (httpRequest) {
         return __awaiter(this, void 0, void 0, function () {
             var r;
             return __generator(this, function (_a) {
                 r = new response_1.AlexaResponse();
                 r.setSpeech("Hi");
-                r.addDirective();
                 return [2 /*return*/, r];
             });
         });

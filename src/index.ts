@@ -2,7 +2,7 @@ require('dotenv').config();
 import * as express from 'express';
 import * as bodyparser from 'body-parser';
 import { AlexaResponse } from './response';
-import { GetIdeaIntent, AddIdeaIntent, TestIntent } from './intents';
+import { LaunchIntent, GetIdeaIntent, AddIdeaIntent, TestIntent } from './intents';
 
 //insert into lunch_spots (title) values ("Test");
 
@@ -12,25 +12,27 @@ const port: number = parseInt(process.env.PORT);
 app.use(bodyparser.json());
 
 
-
+const launchIntent = new LaunchIntent();
 const intents = {};
 intents['getidea'] = new GetIdeaIntent();
 intents['addidea'] = new AddIdeaIntent();
 intents['test'] = new TestIntent();
 
 app.post('/api', async (req, res) => {
-	const context = req.body.context;
-	const request = req.body.request;
-	let r = new AlexaResponse();
+	const alexaContext = req.body.context;
+	const alexaRequest = req.body.request;
+	let r: AlexaResponse;
 
-	if (request.type === 'LaunchRequest') {
-		r.setSpeech("Heroku test");
-	} else if (request.type === 'IntentRequest') {
-		r = await intents[request.intent.name].execute(request);
+	if (alexaRequest.type === 'LaunchRequest') {
+		r = await launchIntent.execute(req);
+	} else if (alexaRequest.type === 'IntentRequest') {
+		r = await intents[alexaRequest.intent.name].execute(req);
 	}
 
 	res.send(r.getData());
 });
+
+app.use('/images/', express.static('images'));
 
 app.use('/', (req, res) => {
 	res.send("Hello world")

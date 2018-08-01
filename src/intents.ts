@@ -1,12 +1,30 @@
-import { AlexaResponse } from './response';
+import { AlexaResponse, BodyTemplate1 } from './response';
+import { getRandomImage } from './images';
+import { Request } from 'express';
 import * as mysql from 'mysql';
 
 interface Intent {
-	execute: (handlerInput: object) => Promise<AlexaResponse>;
+	execute: (httpRequest: Request, alexaRequest: any) => Promise<AlexaResponse>;
+}
+
+export class LaunchIntent {
+	async execute(httpRequest: Request): Promise<AlexaResponse> {
+		const r = new AlexaResponse();
+		r.setSpeech("Hi, I can give you some lunch ideas!")
+		r.setShouldEndSession(false)
+		r.setReprompt('Try, "Where should I go for lunch"')
+
+		const directive = new BodyTemplate1();
+		directive.setBackgroundImage(getRandomImage(httpRequest.header['host']));
+		directive.setTitle('Lunch Bot');
+		r.addDirective(directive);
+
+		return r;
+	}
 }
 
 export class GetIdeaIntent {
-	async execute(handlerInput: object): Promise<AlexaResponse> {
+	async execute(httpRequest: Request): Promise<AlexaResponse> {
 		const connection = mysql.createConnection(process.env.JAWSDB_URL);
 		connection.connect();
 
@@ -35,13 +53,13 @@ export class GetIdeaIntent {
 }
 
 export class AddIdeaIntent {
-	async execute(handlerInput: any): Promise<AlexaResponse> {
+	async execute(httpRequest: Request, alexaRequest: any): Promise<AlexaResponse> {
 		let r = new AlexaResponse();
 
 		const connection = mysql.createConnection(process.env.JAWSDB_URL);
 		connection.connect();
 		try {
-			const title: string = handlerInput.intent.slots.spot.value;
+			const title: string = alexaRequest.intent.slots.spot.value;
 
 			await (new Promise((resolve, reject) => {
 				connection.query('Insert into lunch_spots SET ?', { title }, function(error) {
@@ -63,10 +81,9 @@ export class AddIdeaIntent {
 }
 
 export class TestIntent {
-	async execute(handlerInput: any): Promise<AlexaResponse> {
+	async execute(httpRequest: Request): Promise<AlexaResponse> {
 		let r = new AlexaResponse();
 		r.setSpeech("Hi");
-		r.addDirective();
 		return r;
 	}
 }

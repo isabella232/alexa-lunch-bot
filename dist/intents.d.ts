@@ -1,10 +1,14 @@
 import { AlexaResponse } from './response';
+import { Request } from 'express';
+export declare class LaunchIntent {
+    execute(httpRequest: Request): Promise<AlexaResponse>;
+}
 export declare class GetIdeaIntent {
-    execute(handlerInput: object): Promise<AlexaResponse>;
+    execute(httpRequest: Request): Promise<AlexaResponse>;
 }
 export declare class AddIdeaIntent {
-    execute(handlerInput: any): Promise<AlexaResponse>;
+    execute(httpRequest: Request, alexaRequest: any): Promise<AlexaResponse>;
 }
 export declare class TestIntent {
-    execute(handlerInput: any): Promise<AlexaResponse>;
+    execute(httpRequest: Request): Promise<AlexaResponse>;
 }

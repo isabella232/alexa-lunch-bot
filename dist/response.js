@@ -2,62 +2,81 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 ;
 ;
+;
+;
+// Basic Class to represent display interface BodyTemplate1
+var BodyTemplate1 = /** @class */ (function () {
+    function BodyTemplate1() {
+        this.data = {
+            type: "Display.RenderTemplate",
+            token: "aToken",
+            template: {
+                type: "BodyTemplate1",
+                backButton: "HIDDEN",
+                textContent: {},
+                title: "",
+                backgroundImage: {}
+            }
+        };
+    }
+    BodyTemplate1.prototype.setBackgroundImage = function (url) {
+        this.data.template.backgroundImage = {
+            sources: [{
+                    url: url.toString()
+                }]
+        };
+    };
+    BodyTemplate1.prototype.setTitle = function (title) {
+        this.data.template.title = title;
+    };
+    BodyTemplate1.prototype.setPrimaryContent = function (msg) {
+        this.data.template.textContent.primaryText = {
+            text: msg,
+            type: "PlainText"
+        };
+    };
+    BodyTemplate1.prototype.setSecondaryContent = function (msg) {
+        this.data.template.textContent.secondaryText = {
+            text: msg,
+            type: "PlainText"
+        };
+    };
+    BodyTemplate1.prototype.setTertiaryContent = function (msg) {
+        this.data.template.textContent.tertiaryText = {
+            text: msg,
+            type: "PlainText"
+        };
+    };
+    BodyTemplate1.prototype.getData = function () {
+        return this.data;
+    };
+    return BodyTemplate1;
+}());
+exports.BodyTemplate1 = BodyTemplate1;
 var AlexaResponse = /** @class */ (function () {
     function AlexaResponse() {
         this.data = {
             version: "1.0",
-            response: {},
+            response: {}
         };
     }
+    // Should alexa end the skill after this response? Default is true
+    AlexaResponse.prototype.setShouldEndSession = function (shouldEnd) {
+        this.data.response.shouldEndSession = shouldEnd;
+    };
+    // If the user makes a follow up statement that doesn't match anything in our skill Alexa will say the "reprompt"
+    AlexaResponse.prototype.setReprompt = function (msg) {
+        this.data.response.reprompt = msg;
+    };
+    // What should Alexa say, SSML not currently supported by this skill
     AlexaResponse.prototype.setSpeech = function (msg) {
         this.data.response.outputSpeech = {
             type: "PlainText",
-            text: msg,
-            ssml: "<speak>" + msg + "</speak>"
+            text: msg
         };
     };
-    AlexaResponse.prototype.addDirective = function () {
-        this.data.response.directives = this.data.response.directives || [];
-        this.data.response.directives.push({
-            "type": "Display.RenderTemplate",
-            "template": {
-                "type": "BodyTemplate2",
-                "backButton": "VISIBLE",
-                "backgroundImage": {
-                    "contentDescription": "Textured grey background",
-                    "sources": [
-                        {
-                            "url": "https://upload.wikimedia.org/wikipedia/en/a/a9/Example.jpg",
-                            "size": "MEDIUM"
-                        }
-                    ]
-                },
-                "title": "My Favorite Car",
-                "image": {
-                    "contentDescription": "My favorite car",
-                    "sources": [
-                        {
-                            "url": "https://upload.wikimedia.org/wikipedia/en/a/a9/Example.jpg",
-                            "size": "MEDIUM"
-                        }
-                    ]
-                },
-                "textContent": {
-                    "primaryText": {
-                        "text": "See my favorite car",
-                        "type": "PlainText"
-                    },
-                    "secondaryText": {
-                        "text": "Custom-painted",
-                        "type": "PlainText"
-                    },
-                    "tertiaryText": {
-                        "text": "By me!",
-                        "type": "PlainText"
-                    }
-                }
-            }
-        });
+    AlexaResponse.prototype.addDirective = function (directive) {
+        this.data.response.directives.push(directive.getData());
     };
     AlexaResponse.prototype.getData = function () {
         return this.data;

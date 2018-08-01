@@ -39,39 +39,41 @@ Object.defineProperty(exports, "__esModule", { value: true });
 require('dotenv').config();
 var express = require("express");
 var bodyparser = require("body-parser");
-var response_1 = require("./response");
 var intents_1 = require("./intents");
 //insert into lunch_spots (title) values ("Test");
 var app = express();
 var port = parseInt(process.env.PORT);
 app.use(bodyparser.json());
+var launchIntent = new intents_1.LaunchIntent();
 var intents = {};
 intents['getidea'] = new intents_1.GetIdeaIntent();
 intents['addidea'] = new intents_1.AddIdeaIntent();
 intents['test'] = new intents_1.TestIntent();
 app.post('/api', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-    var context, request, r;
+    var alexaContext, alexaRequest, r;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                context = req.body.context;
-                request = req.body.request;
-                r = new response_1.AlexaResponse();
-                if (!(request.type === 'LaunchRequest')) return [3 /*break*/, 1];
-                r.setSpeech("Heroku test");
-                return [3 /*break*/, 3];
+                alexaContext = req.body.context;
+                alexaRequest = req.body.request;
+                if (!(alexaRequest.type === 'LaunchRequest')) return [3 /*break*/, 2];
+                return [4 /*yield*/, launchIntent.execute(req)];
             case 1:
-                if (!(request.type === 'IntentRequest')) return [3 /*break*/, 3];
-                return [4 /*yield*/, intents[request.intent.name].execute(request)];
-            case 2:
                 r = _a.sent();
-                _a.label = 3;
+                return [3 /*break*/, 4];
+            case 2:
+                if (!(alexaRequest.type === 'IntentRequest')) return [3 /*break*/, 4];
+                return [4 /*yield*/, intents[alexaRequest.intent.name].execute(req)];
             case 3:
+                r = _a.sent();
+                _a.label = 4;
+            case 4:
                 res.send(r.getData());
                 return [2 /*return*/];
         }
     });
 }); });
+app.use('/images/', express.static('images'));
 app.use('/', function (req, res) {
     res.send("Hello world");
 });

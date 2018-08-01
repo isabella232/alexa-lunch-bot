@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var AlexaResponse = /** @class */ (function () {
     function AlexaResponse() {
         this.data = {
-            version: "1",
+            version: "1.0",
             response: {},
         };
     }
@@ -24,35 +24,28 @@ var AlexaResponse = /** @class */ (function () {
                 "type": "BodyTemplate2",
                 "token": "A2079",
                 "backButton": "VISIBLE",
-                "backgroundImage": {
-                    "contentDescription": "Textured grey background",
+                "backgroundImage": "https://www.example.com/background-image1.png",
+                "title": "My Favorite Car",
+                "image": {
+                    "contentDescription": "My favorite car",
                     "sources": [
                         {
-                            "url": "https://www.example.com/background-image1.png"
+                            "url": "https://www.example.com/my-favorite-car.png"
                         }
-                    ],
-                    "title": "My Favorite Car",
-                    "image": {
-                        "contentDescription": "My favorite car",
-                        "sources": [
-                            {
-                                "url": "https://www.example.com/my-favorite-car.png"
-                            }
-                        ]
+                    ]
+                },
+                "textContent": {
+                    "primaryText": {
+                        "text": "See my favorite car",
+                        "type": "PlainText"
                     },
-                    "textContent": {
-                        "primaryText": {
-                            "text": "See my favorite car",
-                            "type": "PlainText"
-                        },
-                        "secondaryText": {
-                            "text": "Custom-painted",
-                            "type": "PlainText"
-                        },
-                        "tertiaryText": {
-                            "text": "By me!",
-                            "type": "PlainText"
-                        }
+                    "secondaryText": {
+                        "text": "Custom-painted",
+                        "type": "PlainText"
+                    },
+                    "tertiaryText": {
+                        "text": "By me!",
+                        "type": "PlainText"
                     }
                 }
             }

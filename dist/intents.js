@@ -37,21 +37,87 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var response_1 = require("./response");
 var images_1 = require("./images");
+var lunch_spot_1 = require("./lunch-spot");
 var mysql = require("mysql");
+function getRandomIdea() {
+    return __awaiter(this, void 0, void 0, function () {
+        var options, selection;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, getAllSpots()];
+                case 1:
+                    options = _a.sent();
+                    selection = options[Math.floor(Math.random() * options.length)];
+                    return [2 /*return*/, selection];
+            }
+        });
+    });
+}
+function getAllSpots() {
+    return __awaiter(this, void 0, void 0, function () {
+        var connection, options;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    connection = mysql.createConnection(process.env.JAWSDB_URL);
+                    connection.connect();
+                    return [4 /*yield*/, (new Promise(function (resolve, reject) {
+                            connection.query('SELECT * FROM lunch_spots', function (error, results) {
+                                if (error)
+                                    reject(error);
+                                var spots = [];
+                                results.forEach(function (row) {
+                                    spots.push(new lunch_spot_1.LunchSpot(row));
+                                });
+                                resolve(spots);
+                            });
+                        }))];
+                case 1:
+                    options = _a.sent();
+                    connection.end();
+                    return [2 /*return*/, options];
+            }
+        });
+    });
+}
+function alterScore(id, amount) {
+    return __awaiter(this, void 0, void 0, function () {
+        var connection;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    connection = mysql.createConnection(process.env.JAWSDB_URL);
+                    connection.connect();
+                    return [4 /*yield*/, (new Promise(function (resolve, reject) {
+                            connection.query('UPDATE lunch_spots SET score = score + ? WHERE id = ?', [amount, id], function (error) {
+                                if (error)
+                                    reject(error);
+                                resolve();
+                            });
+                        }))];
+                case 1:
+                    _a.sent();
+                    connection.end();
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
 var LaunchIntent = /** @class */ (function () {
     function LaunchIntent() {
     }
-    LaunchIntent.prototype.execute = function (httpRequest, alexaRequest) {
+    LaunchIntent.prototype.execute = function (state, alexaRequest) {
         return __awaiter(this, void 0, void 0, function () {
             var r, directive;
             return __generator(this, function (_a) {
                 r = new response_1.AlexaResponse();
                 r.setSpeech("Hi, I can give you some lunch ideas!");
-                r.setShouldEndSession(false);
                 r.setReprompt('Try, "Where should I go for lunch"');
+                r.setShouldEndSession(false);
                 directive = new response_1.BodyTemplate1();
                 directive.setBackgroundImage(images_1.getRandomImage());
                 directive.setTitle('Lunch Bot');
+                directive.setPrimaryContent("Ask for a lunch idea, or add a new idea!");
                 r.addDirective(directive);
                 return [2 /*return*/, r];
             });
@@ -60,34 +126,39 @@ var LaunchIntent = /** @class */ (function () {
     return LaunchIntent;
 }());
 exports.LaunchIntent = LaunchIntent;
+var ExitIntent = /** @class */ (function () {
+    function ExitIntent() {
+    }
+    ExitIntent.prototype.execute = function (state, alexaRequest) {
+        return __awaiter(this, void 0, void 0, function () {
+            var r;
+            return __generator(this, function (_a) {
+                r = new response_1.AlexaResponse();
+                r.setSpeech("Ok, goodbye!");
+                r.setShouldEndSession(true);
+                return [2 /*return*/, r];
+            });
+        });
+    };
+    return ExitIntent;
+}());
+exports.ExitIntent = ExitIntent;
 var GetIdeaIntent = /** @class */ (function () {
     function GetIdeaIntent() {
     }
-    GetIdeaIntent.prototype.execute = function (httpRequest) {
+    GetIdeaIntent.prototype.execute = function (state) {
         return __awaiter(this, void 0, void 0, function () {
-            var connection, options, selection, r;
+            var selection, r;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0:
-                        connection = mysql.createConnection(process.env.JAWSDB_URL);
-                        connection.connect();
-                        return [4 /*yield*/, (new Promise(function (resolve, reject) {
-                                connection.query('SELECT * FROM lunch_spots', function (error, results, fields) {
-                                    if (error)
-                                        reject(error);
-                                    var options = [];
-                                    results.forEach(function (row) {
-                                        options.push(row.title);
-                                    });
-                                    resolve(options);
-                                });
-                            }))];
+                    case 0: return [4 /*yield*/, getRandomIdea()];
                     case 1:
-                        options = _a.sent();
-                        connection.end();
-                        selection = options[Math.floor(Math.random() * options.length)];
+                        selection = _a.sent();
+                        state.lastLunchSpot = selection;
                         r = new response_1.AlexaResponse();
-                        r.setSpeech("How does " + selection + " sound?");
+                        r.setSpeech("How does " + selection.title + " sound?");
+                        r.setShouldEndSession(false);
+                        r.setReprompt("You can say \"That's a bad idea\" or \"That'll do pig\"");
                         return [2 /*return*/, r];
                 }
             });
@@ -96,10 +167,63 @@ var GetIdeaIntent = /** @class */ (function () {
     return GetIdeaIntent;
 }());
 exports.GetIdeaIntent = GetIdeaIntent;
+var BadIdeaIntent = /** @class */ (function () {
+    function BadIdeaIntent() {
+    }
+    BadIdeaIntent.prototype.execute = function (state) {
+        return __awaiter(this, void 0, void 0, function () {
+            var r, selection;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        r = new response_1.AlexaResponse();
+                        if (!state.lastLunchSpot) return [3 /*break*/, 2];
+                        alterScore(state.lastLunchSpot.id, -1);
+                        return [4 /*yield*/, getRandomIdea()];
+                    case 1:
+                        selection = _a.sent();
+                        state.lastLunchSpot = selection;
+                        r.setSpeech("Ok that idea will come up less often. What about " + selection.title + "?");
+                        r.setShouldEndSession(false);
+                        return [3 /*break*/, 3];
+                    case 2:
+                        r.setSpeech("I'm not sure which idea we were talking about.");
+                        _a.label = 3;
+                    case 3: return [2 /*return*/, r];
+                }
+            });
+        });
+    };
+    return BadIdeaIntent;
+}());
+exports.BadIdeaIntent = BadIdeaIntent;
+var GoodIdeaIntent = /** @class */ (function () {
+    function GoodIdeaIntent() {
+    }
+    GoodIdeaIntent.prototype.execute = function (state) {
+        return __awaiter(this, void 0, void 0, function () {
+            var r;
+            return __generator(this, function (_a) {
+                r = new response_1.AlexaResponse();
+                if (state.lastLunchSpot) {
+                    alterScore(state.lastLunchSpot.id, 1);
+                    r.setSpeech("Ok that idea will come up more often!");
+                    r.setShouldEndSession(true);
+                }
+                else {
+                    r.setSpeech("I'm not sure which idea we were talking about.");
+                }
+                return [2 /*return*/, r];
+            });
+        });
+    };
+    return GoodIdeaIntent;
+}());
+exports.GoodIdeaIntent = GoodIdeaIntent;
 var AddIdeaIntent = /** @class */ (function () {
     function AddIdeaIntent() {
     }
-    AddIdeaIntent.prototype.execute = function (httpRequest, alexaRequest) {
+    AddIdeaIntent.prototype.execute = function (state, alexaRequest) {
         return __awaiter(this, void 0, void 0, function () {
             var r, connection, title_1, err_1;
             return __generator(this, function (_a) {
@@ -122,11 +246,13 @@ var AddIdeaIntent = /** @class */ (function () {
                     case 2:
                         _a.sent();
                         r.setSpeech("Ok, " + title_1 + " has been added to the list!");
+                        r.setShouldEndSession(false);
                         return [3 /*break*/, 5];
                     case 3:
                         err_1 = _a.sent();
                         console.log(err_1);
                         r.setSpeech("I'm pretty sure that was already on the list.");
+                        r.setShouldEndSession(false);
                         return [3 /*break*/, 5];
                     case 4:
                         connection.end();
@@ -139,19 +265,3 @@ var AddIdeaIntent = /** @class */ (function () {
     return AddIdeaIntent;
 }());
 exports.AddIdeaIntent = AddIdeaIntent;
-var TestIntent = /** @class */ (function () {
-    function TestIntent() {
-    }
-    TestIntent.prototype.execute = function (httpRequest) {
-        return __awaiter(this, void 0, void 0, function () {
-            var r;
-            return __generator(this, function (_a) {
-                r = new response_1.AlexaResponse();
-                r.setSpeech("Hi");
-                return [2 /*return*/, r];
-            });
-        });
-    };
-    return TestIntent;
-}());
-exports.TestIntent = TestIntent;

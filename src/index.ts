@@ -2,20 +2,21 @@ require('dotenv').config();
 import * as express from 'express';
 import * as bodyparser from 'body-parser';
 import { AlexaResponse } from './response';
-import { LaunchIntent, GetIdeaIntent, AddIdeaIntent, TestIntent } from './intents';
+import * as Intents from './intents';
+import { LunchSpot } from './lunch-spot';
+import { State } from './state';
 
-//insert into lunch_spots (title) values ("Test");
-
+const state = new State();
 const app: express.Application = express();
-
 app.use(bodyparser.json());
 
-
-const launchIntent = new LaunchIntent();
+const launchIntent = new Intents.LaunchIntent();
+const exitIntent = new Intents.ExitIntent();
 const intents = {};
-intents['getidea'] = new GetIdeaIntent();
-intents['addidea'] = new AddIdeaIntent();
-intents['test'] = new TestIntent();
+intents['getidea'] = new Intents.GetIdeaIntent();
+intents['addidea'] = new Intents.AddIdeaIntent();
+intents['goodidea'] = new Intents.GoodIdeaIntent();
+intents['badidea'] = new Intents.BadIdeaIntent();
 
 app.post('/api', (req, res) => {
 	const alexaContext = req.body.context;
@@ -25,11 +26,18 @@ app.post('/api', (req, res) => {
 	(async function() {
 		try {
 			if (alexaRequest.type === 'LaunchRequest') {
-				r = await launchIntent.execute(req, alexaRequest);
+				state.lastLunchSpot = null;
+				r = await launchIntent.execute(state, alexaRequest);
 			} else if (alexaRequest.type === 'IntentRequest') {
-				r = await intents[alexaRequest.intent.name].execute(req);
+				const intent = intents[alexaRequest.intent.name];
+
+				if (intent)
+					r = await intent.execute(req);
+				else
+					r.setSpeech("I'm not sure what to do.");
 			} else if (alexaRequest.type === 'SessionEndedRequest') {
-				r = await launchIntent.execute(req, alexaRequest);
+				r = await launchIntent.execute(state, alexaRequest);
+				state.lastLunchSpot = null;
 			}
 		} catch (err) {
 			console.log("Error while creating response.", err);

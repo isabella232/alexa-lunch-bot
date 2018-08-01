@@ -39,49 +39,60 @@ require('dotenv').config();
 var express = require("express");
 var bodyparser = require("body-parser");
 var response_1 = require("./response");
-var intents_1 = require("./intents");
-//insert into lunch_spots (title) values ("Test");
+var Intents = require("./intents");
+var state_1 = require("./state");
+var state = new state_1.State();
 var app = express();
 app.use(bodyparser.json());
-var launchIntent = new intents_1.LaunchIntent();
+var launchIntent = new Intents.LaunchIntent();
+var exitIntent = new Intents.ExitIntent();
 var intents = {};
-intents['getidea'] = new intents_1.GetIdeaIntent();
-intents['addidea'] = new intents_1.AddIdeaIntent();
-intents['test'] = new intents_1.TestIntent();
+intents['getidea'] = new Intents.GetIdeaIntent();
+intents['addidea'] = new Intents.AddIdeaIntent();
+intents['goodidea'] = new Intents.GoodIdeaIntent();
+intents['badidea'] = new Intents.BadIdeaIntent();
 app.post('/api', function (req, res) {
     var alexaContext = req.body.context;
     var alexaRequest = req.body.request;
     var r = new response_1.AlexaResponse();
     (function () {
         return __awaiter(this, void 0, void 0, function () {
-            var err_1;
+            var intent, err_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        _a.trys.push([0, 7, , 8]);
+                        _a.trys.push([0, 9, , 10]);
                         if (!(alexaRequest.type === 'LaunchRequest')) return [3 /*break*/, 2];
-                        return [4 /*yield*/, launchIntent.execute(req, alexaRequest)];
+                        state.lastLunchSpot = null;
+                        return [4 /*yield*/, launchIntent.execute(state, alexaRequest)];
                     case 1:
                         r = _a.sent();
-                        return [3 /*break*/, 6];
+                        return [3 /*break*/, 8];
                     case 2:
-                        if (!(alexaRequest.type === 'IntentRequest')) return [3 /*break*/, 4];
-                        return [4 /*yield*/, intents[alexaRequest.intent.name].execute(req)];
+                        if (!(alexaRequest.type === 'IntentRequest')) return [3 /*break*/, 6];
+                        intent = intents[alexaRequest.intent.name];
+                        if (!intent) return [3 /*break*/, 4];
+                        return [4 /*yield*/, intent.execute(req)];
                     case 3:
                         r = _a.sent();
-                        return [3 /*break*/, 6];
+                        return [3 /*break*/, 5];
                     case 4:
-                        if (!(alexaRequest.type === 'SessionEndedRequest')) return [3 /*break*/, 6];
-                        return [4 /*yield*/, launchIntent.execute(req, alexaRequest)];
-                    case 5:
-                        r = _a.sent();
-                        _a.label = 6;
-                    case 6: return [3 /*break*/, 8];
+                        r.setSpeech("I'm not sure what to do.");
+                        _a.label = 5;
+                    case 5: return [3 /*break*/, 8];
+                    case 6:
+                        if (!(alexaRequest.type === 'SessionEndedRequest')) return [3 /*break*/, 8];
+                        return [4 /*yield*/, launchIntent.execute(state, alexaRequest)];
                     case 7:
+                        r = _a.sent();
+                        state.lastLunchSpot = null;
+                        _a.label = 8;
+                    case 8: return [3 /*break*/, 10];
+                    case 9:
                         err_1 = _a.sent();
                         console.log("Error while creating response.", err_1);
-                        return [3 /*break*/, 8];
-                    case 8:
+                        return [3 /*break*/, 10];
+                    case 10:
                         res.send(r.getData());
                         return [2 /*return*/];
                 }

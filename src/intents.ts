@@ -6,12 +6,11 @@ interface Intent {
 	execute: (handlerInput: object) => Promise<AlexaResponse>;
 }
 
-const connection = mysql.createConnection(process.env.JAWSDB_URL);
-
 export class GetIdeaIntent {
 	public readonly key = 'getidea';
 
 	async execute(handlerInput: object): Promise<AlexaResponse> {
+		const connection = mysql.createConnection(process.env.JAWSDB_URL);
 		connection.connect();
 
 		var options: string[] = await (new Promise<string[]>((resolve, reject) => {
@@ -35,5 +34,34 @@ export class GetIdeaIntent {
 		let r = new AlexaResponse();
 		r.setSpeech(`How does ${selection} sound?`);
 		return r;
+	}
+}
+
+export class AddIdeaIntent {
+	public readonly key = 'addidea';
+
+	async execute(handlerInput: any): Promise<AlexaResponse> {
+		let r = new AlexaResponse();
+
+		const connection = mysql.createConnection(process.env.JAWSDB_URL);
+		connection.connect();
+		try {
+			const title: string = handlerInput.intent.slots.spot.value;
+
+			await (new Promise((resolve, reject) => {
+				connection.query('Insert into lunch_spots SET ?', { title }, function(error) {
+					if (error) reject(error);
+
+					resolve();
+				});
+			}));
+
+			r.setSpeech(`Ok, ${title} has been added to the list!`);
+		} catch (err) {
+			r.setSpeech("I'm pretty sure that was already on the list.");
+		} finally {
+			connection.end();
+			return r;
+		}
 	}
 }

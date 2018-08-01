@@ -37,17 +37,17 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var response_1 = require("./response");
 var mysql = require("mysql");
-var connection = mysql.createConnection(process.env.JAWSDB_URL);
 var GetIdeaIntent = /** @class */ (function () {
     function GetIdeaIntent() {
         this.key = 'getidea';
     }
     GetIdeaIntent.prototype.execute = function (handlerInput) {
         return __awaiter(this, void 0, void 0, function () {
-            var options, selection, r;
+            var connection, options, selection, r;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
+                        connection = mysql.createConnection(process.env.JAWSDB_URL);
                         connection.connect();
                         return [4 /*yield*/, (new Promise(function (resolve, reject) {
                                 connection.query('SELECT * FROM lunch_spots', function (error, results, fields) {
@@ -74,3 +74,46 @@ var GetIdeaIntent = /** @class */ (function () {
     return GetIdeaIntent;
 }());
 exports.GetIdeaIntent = GetIdeaIntent;
+var AddIdeaIntent = /** @class */ (function () {
+    function AddIdeaIntent() {
+        this.key = 'addidea';
+    }
+    AddIdeaIntent.prototype.execute = function (handlerInput) {
+        return __awaiter(this, void 0, void 0, function () {
+            var r, connection, title_1, err_1;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        r = new response_1.AlexaResponse();
+                        connection = mysql.createConnection(process.env.JAWSDB_URL);
+                        connection.connect();
+                        _a.label = 1;
+                    case 1:
+                        _a.trys.push([1, 3, 4, 5]);
+                        title_1 = handlerInput.intent.slots.spot.value;
+                        return [4 /*yield*/, (new Promise(function (resolve, reject) {
+                                connection.query('Insert into lunch_spots SET ?', { title: title_1 }, function (error) {
+                                    if (error)
+                                        reject(error);
+                                    resolve();
+                                });
+                            }))];
+                    case 2:
+                        _a.sent();
+                        r.setSpeech("Ok, " + title_1 + " has been added to the list!");
+                        return [3 /*break*/, 5];
+                    case 3:
+                        err_1 = _a.sent();
+                        r.setSpeech("I'm pretty sure that was already on the list.");
+                        return [3 /*break*/, 5];
+                    case 4:
+                        connection.end();
+                        return [2 /*return*/, r];
+                    case 5: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    return AddIdeaIntent;
+}());
+exports.AddIdeaIntent = AddIdeaIntent;

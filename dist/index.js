@@ -48,6 +48,8 @@ app.use(bodyparser.json());
 var intents = {};
 var getidea = new intents_1.GetIdeaIntent();
 intents[getidea.key] = getidea;
+var addidea = new intents_1.AddIdeaIntent();
+intents[addidea.key] = addidea;
 app.post('/api', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
     var context, request, r;
     return __generator(this, function (_a) {

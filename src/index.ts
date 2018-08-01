@@ -2,7 +2,7 @@ require('dotenv').config();
 import * as express from 'express';
 import * as bodyparser from 'body-parser';
 import { AlexaResponse } from './response';
-import { GetIdeaIntent } from './intents';
+import { GetIdeaIntent, AddIdeaIntent } from './intents';
 
 //insert into lunch_spots (title) values ("Test");
 
@@ -16,6 +16,8 @@ app.use(bodyparser.json());
 const intents = {};
 const getidea = new GetIdeaIntent();
 intents[getidea.key] = getidea;
+const addidea = new AddIdeaIntent();
+intents[addidea.key] = addidea;
 
 app.post('/api', async (req, res) => {
 	const context = req.body.context;

@@ -3,7 +3,7 @@ import * as mysql from 'mysql';
 
 interface Intent {
 	readonly key: string;
-	execute: (handlerInput: object) => AlexaResponse;
+	execute: (handlerInput: object) => Promise<AlexaResponse>;
 }
 
 const connection = mysql.createConnection(process.env.JAWSDB_URL);
@@ -11,17 +11,21 @@ const connection = mysql.createConnection(process.env.JAWSDB_URL);
 export class GetIdeaIntent {
 	public readonly key = 'getidea';
 
-	execute(handlerInput: object): AlexaResponse {
+	async execute(handlerInput: object): Promise<AlexaResponse> {
 		connection.connect();
 
-		var options = [];
-		connection.query('SELECT * FROM lunch_spots', function(error, results, fields) {
-			if (error) throw error;
+		var options: string[] = await (new Promise<string[]>((resolve, reject) => {
+			connection.query('SELECT * FROM lunch_spots', function(error, results, fields) {
+				if (error) reject(error);
 
-			results.forEach((row) => {
-				options.push(row.title);
-			})
-		});
+				var options: string[] = [];
+				results.forEach((row) => {
+					options.push(row.title);
+				});
+
+				resolve(options);
+			});
+		}));
 
 		connection.end();
 

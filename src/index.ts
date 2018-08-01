@@ -17,7 +17,7 @@ const intents = {};
 const getidea = new GetIdeaIntent();
 intents[getidea.key] = getidea;
 
-app.post('/api', (req, res) => {
+app.post('/api', async (req, res) => {
 	const context = req.body.context;
 	const request = req.body.request;
 	let r = new AlexaResponse();
@@ -25,7 +25,7 @@ app.post('/api', (req, res) => {
 	if (request.type === 'LaunchRequest') {
 		r.setSpeech("Heroku test");
 	} else if (request.type === 'IntentRequest') {
-		r = intents[request.intent.name].execute(request);
+		r = await intents[request.intent.name].execute(request);
 	}
 
 	res.send(r.getData());

@@ -39,7 +39,7 @@ export class AlexaResponse {
 					"contentDescription": "Textured grey background",
 					"sources": [
 						{
-							"url": "https://www.example.com/background-image1.png"
+							"url": "https://upload.wikimedia.org/wikipedia/en/a/a9/Example.jpg"
 						}
 					]
 				},
@@ -48,7 +48,7 @@ export class AlexaResponse {
 					"contentDescription": "My favorite car",
 					"sources": [
 						{
-							"url": "https://www.example.com/my-favorite-car.png"
+							"url": "https://upload.wikimedia.org/wikipedia/en/a/a9/Example.jpg"
 						}
 					]
 				},

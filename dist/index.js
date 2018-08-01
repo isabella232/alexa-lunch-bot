@@ -42,7 +42,6 @@ var bodyparser = require("body-parser");
 var intents_1 = require("./intents");
 //insert into lunch_spots (title) values ("Test");
 var app = express();
-var port = parseInt(process.env.PORT);
 app.use(bodyparser.json());
 var launchIntent = new intents_1.LaunchIntent();
 var intents = {};
@@ -74,10 +73,7 @@ app.post('/api', function (req, res) { return __awaiter(_this, void 0, void 0, f
     });
 }); });
 app.use('/images/', express.static('images'));
-app.use('/', function (req, res) {
-    res.send("Hello world");
-});
-app.listen(port, function () {
+app.listen(process.env.PORT, function () {
     // Success callback
-    console.log("Listening at http://localhost:" + port + "/");
+    console.log("Listening at " + process.env.HOST + ":" + process.env.PORT + "/");
 });

@@ -7,7 +7,6 @@ import { LaunchIntent, GetIdeaIntent, AddIdeaIntent, TestIntent } from './intent
 //insert into lunch_spots (title) values ("Test");
 
 const app: express.Application = express();
-const port: number = parseInt(process.env.PORT);
 
 app.use(bodyparser.json());
 
@@ -34,12 +33,7 @@ app.post('/api', async (req, res) => {
 
 app.use('/images/', express.static('images'));
 
-app.use('/', (req, res) => {
-	res.send("Hello world")
-});
-
-
-app.listen(port, () => {
+app.listen(process.env.PORT, () => {
 	// Success callback
-	console.log(`Listening at http://localhost:${port}/`);
+	console.log(`Listening at ${process.env.HOST}:${process.env.PORT}/`);
 });

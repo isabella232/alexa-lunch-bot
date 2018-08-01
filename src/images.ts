@@ -8,9 +8,9 @@ const imageList = [
 ];
 const basePath = '/images/';
 
-export function getRandomImage(hostName: string): URL {
+export function getRandomImage(): URL {
 	const image = imageList[Math.floor(Math.random() * imageList.length)];
-	const urlString = `${hostName}${basePath}${image}`;
+	const urlString = `${process.env.HOST}${basePath}${image}`;
 
 	try {
 		const url = new URL(urlString);

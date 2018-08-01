@@ -22,13 +22,6 @@ export class AlexaResponse {
 	}
 
 	public addDirective() {
-		this.data.response.card = {
-			"type": "Standard",
-			"title": "Title of the card",
-			"content": "Content of a simple card",
-			"text": "Text content for a standard card"
-		};
-
 		this.data.response.directives = this.data.response.directives || [];
 		this.data.response.directives.push({
 			"type": "Display.RenderTemplate",

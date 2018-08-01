@@ -48,6 +48,19 @@ async function alterScore(id: number, amount: number) {
 	connection.end();
 }
 
+async function setDate(id: number) {
+	const connection = mysql.createConnection(process.env.JAWSDB_URL);
+	connection.connect();
+
+	await (new Promise<LunchSpot[]>((resolve, reject) => {
+		connection.query('UPDATE lunch_spots SET lastSuggested = NOW() where id = ?', [id], function(error) {
+			if (error) reject(error);
+			resolve();
+		});
+	}));
+	connection.end();
+}
+
 interface Intent {
 	execute: (state: State, alexaRequest: any) => Promise<AlexaResponse>;
 }
@@ -83,6 +96,7 @@ export class GetIdeaIntent implements Intent {
 	async execute(state: State): Promise<AlexaResponse> {
 		// Pick a random one
 		const selection = await getRandomIdea();
+		await setDate(selection.id);
 		state.lastLunchSpot = selection;
 
 		// Respond
@@ -102,6 +116,7 @@ export class BadIdeaIntent implements Intent {
 			alterScore(state.lastLunchSpot.id, -1);
 
 			const selection = await getRandomIdea();
+			await setDate(selection.id);
 			state.lastLunchSpot = selection;
 
 			r.setSpeech(`Ok that idea will come up less often. What about ${selection.title}?`);

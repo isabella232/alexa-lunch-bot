@@ -103,6 +103,29 @@ function alterScore(id, amount) {
         });
     });
 }
+function setDate(id) {
+    return __awaiter(this, void 0, void 0, function () {
+        var connection;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    connection = mysql.createConnection(process.env.JAWSDB_URL);
+                    connection.connect();
+                    return [4 /*yield*/, (new Promise(function (resolve, reject) {
+                            connection.query('UPDATE lunch_spots SET lastSuggested = NOW() where id = ?', [id], function (error) {
+                                if (error)
+                                    reject(error);
+                                resolve();
+                            });
+                        }))];
+                case 1:
+                    _a.sent();
+                    connection.end();
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
 var LaunchIntent = /** @class */ (function () {
     function LaunchIntent() {
     }
@@ -154,6 +177,9 @@ var GetIdeaIntent = /** @class */ (function () {
                     case 0: return [4 /*yield*/, getRandomIdea()];
                     case 1:
                         selection = _a.sent();
+                        return [4 /*yield*/, setDate(selection.id)];
+                    case 2:
+                        _a.sent();
                         state.lastLunchSpot = selection;
                         r = new response_1.AlexaResponse();
                         r.setSpeech("How does " + selection.title + " sound?");
@@ -177,19 +203,22 @@ var BadIdeaIntent = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         r = new response_1.AlexaResponse();
-                        if (!state.lastLunchSpot) return [3 /*break*/, 2];
+                        if (!state.lastLunchSpot) return [3 /*break*/, 3];
                         alterScore(state.lastLunchSpot.id, -1);
                         return [4 /*yield*/, getRandomIdea()];
                     case 1:
                         selection = _a.sent();
+                        return [4 /*yield*/, setDate(selection.id)];
+                    case 2:
+                        _a.sent();
                         state.lastLunchSpot = selection;
                         r.setSpeech("Ok that idea will come up less often. What about " + selection.title + "?");
                         r.setShouldEndSession(false);
-                        return [3 /*break*/, 3];
-                    case 2:
+                        return [3 /*break*/, 4];
+                    case 3:
                         r.setSpeech("I'm not sure which idea we were talking about.");
-                        _a.label = 3;
-                    case 3: return [2 /*return*/, r];
+                        _a.label = 4;
+                    case 4: return [2 /*return*/, r];
                 }
             });
         });

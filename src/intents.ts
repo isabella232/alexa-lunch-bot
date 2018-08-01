@@ -2,13 +2,10 @@ import { AlexaResponse } from './response';
 import * as mysql from 'mysql';
 
 interface Intent {
-	readonly key: string;
 	execute: (handlerInput: object) => Promise<AlexaResponse>;
 }
 
 export class GetIdeaIntent {
-	public readonly key = 'getidea';
-
 	async execute(handlerInput: object): Promise<AlexaResponse> {
 		const connection = mysql.createConnection(process.env.JAWSDB_URL);
 		connection.connect();
@@ -38,8 +35,6 @@ export class GetIdeaIntent {
 }
 
 export class AddIdeaIntent {
-	public readonly key = 'addidea';
-
 	async execute(handlerInput: any): Promise<AlexaResponse> {
 		let r = new AlexaResponse();
 
@@ -58,10 +53,20 @@ export class AddIdeaIntent {
 
 			r.setSpeech(`Ok, ${title} has been added to the list!`);
 		} catch (err) {
+			console.log(err);
 			r.setSpeech("I'm pretty sure that was already on the list.");
 		} finally {
 			connection.end();
 			return r;
 		}
+	}
+}
+
+export class TestIntent {
+	async execute(handlerInput: any): Promise<AlexaResponse> {
+		let r = new AlexaResponse();
+		r.setSpeech("Hi");
+		r.addDirective();
+		return r;
 	}
 }

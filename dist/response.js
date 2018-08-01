@@ -6,7 +6,7 @@ var AlexaResponse = /** @class */ (function () {
     function AlexaResponse() {
         this.data = {
             version: "1",
-            response: {}
+            response: {},
         };
     }
     AlexaResponse.prototype.setSpeech = function (msg) {
@@ -15,6 +15,48 @@ var AlexaResponse = /** @class */ (function () {
             text: msg,
             ssml: "<speak>" + msg + "</speak>"
         };
+    };
+    AlexaResponse.prototype.addDirective = function () {
+        this.data.response.directives = this.data.response.directives || [];
+        this.data.response.directives.push({
+            "type": "Display.RenderTemplate",
+            "template": {
+                "type": "BodyTemplate2",
+                "token": "A2079",
+                "backButton": "VISIBLE",
+                "backgroundImage": {
+                    "contentDescription": "Textured grey background",
+                    "sources": [
+                        {
+                            "url": "https://www.example.com/background-image1.png"
+                        }
+                    ],
+                    "title": "My Favorite Car",
+                    "image": {
+                        "contentDescription": "My favorite car",
+                        "sources": [
+                            {
+                                "url": "https://www.example.com/my-favorite-car.png"
+                            }
+                        ]
+                    },
+                    "textContent": {
+                        "primaryText": {
+                            "text": "See my favorite car",
+                            "type": "PlainText"
+                        },
+                        "secondaryText": {
+                            "text": "Custom-painted",
+                            "type": "PlainText"
+                        },
+                        "tertiaryText": {
+                            "text": "By me!",
+                            "type": "PlainText"
+                        }
+                    }
+                }
+            }
+        });
     };
     AlexaResponse.prototype.getData = function () {
         return this.data;

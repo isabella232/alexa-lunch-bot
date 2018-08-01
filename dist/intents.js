@@ -39,7 +39,6 @@ var response_1 = require("./response");
 var mysql = require("mysql");
 var GetIdeaIntent = /** @class */ (function () {
     function GetIdeaIntent() {
-        this.key = 'getidea';
     }
     GetIdeaIntent.prototype.execute = function (handlerInput) {
         return __awaiter(this, void 0, void 0, function () {
@@ -76,7 +75,6 @@ var GetIdeaIntent = /** @class */ (function () {
 exports.GetIdeaIntent = GetIdeaIntent;
 var AddIdeaIntent = /** @class */ (function () {
     function AddIdeaIntent() {
-        this.key = 'addidea';
     }
     AddIdeaIntent.prototype.execute = function (handlerInput) {
         return __awaiter(this, void 0, void 0, function () {
@@ -104,6 +102,7 @@ var AddIdeaIntent = /** @class */ (function () {
                         return [3 /*break*/, 5];
                     case 3:
                         err_1 = _a.sent();
+                        console.log(err_1);
                         r.setSpeech("I'm pretty sure that was already on the list.");
                         return [3 /*break*/, 5];
                     case 4:
@@ -117,3 +116,20 @@ var AddIdeaIntent = /** @class */ (function () {
     return AddIdeaIntent;
 }());
 exports.AddIdeaIntent = AddIdeaIntent;
+var TestIntent = /** @class */ (function () {
+    function TestIntent() {
+    }
+    TestIntent.prototype.execute = function (handlerInput) {
+        return __awaiter(this, void 0, void 0, function () {
+            var r;
+            return __generator(this, function (_a) {
+                r = new response_1.AlexaResponse();
+                r.setSpeech("Hi");
+                r.addDirective();
+                return [2 /*return*/, r];
+            });
+        });
+    };
+    return TestIntent;
+}());
+exports.TestIntent = TestIntent;

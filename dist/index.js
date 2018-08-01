@@ -46,10 +46,9 @@ var app = express();
 var port = parseInt(process.env.PORT);
 app.use(bodyparser.json());
 var intents = {};
-var getidea = new intents_1.GetIdeaIntent();
-intents[getidea.key] = getidea;
-var addidea = new intents_1.AddIdeaIntent();
-intents[addidea.key] = addidea;
+intents['getidea'] = new intents_1.GetIdeaIntent();
+intents['addidea'] = new intents_1.AddIdeaIntent();
+intents['test'] = new intents_1.TestIntent();
 app.post('/api', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
     var context, request, r;
     return __generator(this, function (_a) {

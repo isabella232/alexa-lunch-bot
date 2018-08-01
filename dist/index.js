@@ -34,11 +34,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var _this = this;
 Object.defineProperty(exports, "__esModule", { value: true });
 require('dotenv').config();
 var express = require("express");
 var bodyparser = require("body-parser");
+var response_1 = require("./response");
 var intents_1 = require("./intents");
 //insert into lunch_spots (title) values ("Test");
 var app = express();
@@ -48,32 +48,57 @@ var intents = {};
 intents['getidea'] = new intents_1.GetIdeaIntent();
 intents['addidea'] = new intents_1.AddIdeaIntent();
 intents['test'] = new intents_1.TestIntent();
-app.post('/api', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-    var alexaContext, alexaRequest, r;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                alexaContext = req.body.context;
-                alexaRequest = req.body.request;
-                if (!(alexaRequest.type === 'LaunchRequest')) return [3 /*break*/, 2];
-                return [4 /*yield*/, launchIntent.execute(req)];
-            case 1:
-                r = _a.sent();
-                return [3 /*break*/, 4];
-            case 2:
-                if (!(alexaRequest.type === 'IntentRequest')) return [3 /*break*/, 4];
-                return [4 /*yield*/, intents[alexaRequest.intent.name].execute(req)];
-            case 3:
-                r = _a.sent();
-                _a.label = 4;
-            case 4:
-                res.send(r.getData());
-                return [2 /*return*/];
-        }
-    });
-}); });
+app.post('/api', function (req, res) {
+    var alexaContext = req.body.context;
+    var alexaRequest = req.body.request;
+    var r = new response_1.AlexaResponse();
+    (function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var err_1;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        console.log("very start");
+                        _a.label = 1;
+                    case 1:
+                        _a.trys.push([1, 7, , 8]);
+                        if (!(alexaRequest.type === 'LaunchRequest')) return [3 /*break*/, 3];
+                        console.log("Doing launch");
+                        return [4 /*yield*/, launchIntent.execute(req, alexaRequest)];
+                    case 2:
+                        r = _a.sent();
+                        console.log("Done launch");
+                        return [3 /*break*/, 6];
+                    case 3:
+                        if (!(alexaRequest.type === 'IntentRequest')) return [3 /*break*/, 5];
+                        return [4 /*yield*/, intents[alexaRequest.intent.name].execute(req)];
+                    case 4:
+                        r = _a.sent();
+                        return [3 /*break*/, 6];
+                    case 5:
+                        if (alexaRequest.type === 'SessionEndedRequest') {
+                            r.setSpeech("Error");
+                        }
+                        _a.label = 6;
+                    case 6: return [3 /*break*/, 8];
+                    case 7:
+                        err_1 = _a.sent();
+                        console.log("Error while creating response.", err_1);
+                        return [3 /*break*/, 8];
+                    case 8:
+                        console.log("Sending data");
+                        res.send(r.getData());
+                        return [2 /*return*/];
+                }
+            });
+        });
+    })();
+});
 app.use('/images/', express.static('images'));
+app.use('/', function (req, res) {
+    res.send("");
+});
 app.listen(process.env.PORT, function () {
     // Success callback
-    console.log("Listening at " + process.env.HOST + ":" + process.env.PORT + "/");
+    console.log("Listening at " + process.env.PORT + "/");
 });

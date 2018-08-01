@@ -8,16 +8,22 @@ interface Intent {
 }
 
 export class LaunchIntent {
-	async execute(httpRequest: Request): Promise<AlexaResponse> {
-		const r = new AlexaResponse();
-		r.setSpeech("Hi, I can give you some lunch ideas!")
-		r.setShouldEndSession(false)
-		r.setReprompt('Try, "Where should I go for lunch"')
+	async execute(httpRequest: Request, alexaRequest: any): Promise<AlexaResponse> {
 
-		const directive = new BodyTemplate1();
-		directive.setBackgroundImage(getRandomImage(httpRequest.protocol + '://' + httpRequest.get('host')));
-		directive.setTitle('Lunch Bot');
-		r.addDirective(directive);
+		console.log("create response");
+		let r = new AlexaResponse();
+		console.log("set speech");
+		r.setSpeech("Hi, I can give you some lunch ideas!")
+		console.log("set end");
+		//r.setShouldEndSession(false)
+		console.log("set reprompt");
+		r.setReprompt('Try, "Where should I go for lunch"')
+		console.log("response done");
+
+		// const directive = new BodyTemplate1();
+		// directive.setBackgroundImage(getRandomImage());
+		// directive.setTitle('Lunch Bot');
+		// r.addDirective(directive);
 
 		return r;
 	}

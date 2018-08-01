@@ -73,7 +73,7 @@ export class BodyTemplate1 implements AlexaDirective {
 		}
 	}
 
-	getData(): any {
+	public getData(): any {
 		return this.data;
 	}
 }

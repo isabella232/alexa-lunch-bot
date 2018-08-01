@@ -17,23 +17,38 @@ intents['getidea'] = new GetIdeaIntent();
 intents['addidea'] = new AddIdeaIntent();
 intents['test'] = new TestIntent();
 
-app.post('/api', async (req, res) => {
+app.post('/api', (req, res) => {
 	const alexaContext = req.body.context;
 	const alexaRequest = req.body.request;
-	let r: AlexaResponse;
+	let r = new AlexaResponse();
 
-	if (alexaRequest.type === 'LaunchRequest') {
-		r = await launchIntent.execute(req);
-	} else if (alexaRequest.type === 'IntentRequest') {
-		r = await intents[alexaRequest.intent.name].execute(req);
-	}
+	(async function() {
+		console.log("very start");
+		try {
+			if (alexaRequest.type === 'LaunchRequest') {
+				console.log("Doing launch");
+				r = await launchIntent.execute(req, alexaRequest);
+				console.log("Done launch");
+			} else if (alexaRequest.type === 'IntentRequest') {
+				r = await intents[alexaRequest.intent.name].execute(req);
+			} else if (alexaRequest.type === 'SessionEndedRequest') {
+				r.setSpeech("Error");
+			}
+		} catch (err) {
+			console.log("Error while creating response.", err);
+		}
 
-	res.send(r.getData());
+		console.log("Sending data");
+		res.send(r.getData());
+	})();
 });
 
 app.use('/images/', express.static('images'));
+app.use('/', function(req, res) {
+	res.send("");
+});
 
 app.listen(process.env.PORT, () => {
 	// Success callback
-	console.log(`Listening at ${process.env.HOST}:${process.env.PORT}/`);
+	console.log(`Listening at ${process.env.PORT}/`);
 });

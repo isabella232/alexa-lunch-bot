@@ -109,6 +109,17 @@ export class GetIdeaIntent implements Intent {
 }
 
 export class BadIdeaIntent implements Intent {
+	private getLessOftenPhrase(): string {
+		const options = [
+			`Ok that idea will come up less often.`,
+			`I'll suggest that less.`,
+			`I'll put a pin in that.`,
+			`We'll that's your opinion.`,
+			`Everyone else seems to disagree.`
+		]
+		return options[Math.floor(Math.random() * options.length)];
+	}
+
 	async execute(state: State): Promise<AlexaResponse> {
 		let r = new AlexaResponse();
 
@@ -119,7 +130,7 @@ export class BadIdeaIntent implements Intent {
 			await setDate(selection.id);
 			state.lastLunchSpot = selection;
 
-			r.setSpeech(`Ok that idea will come up less often. What about ${selection.title}?`);
+			r.setSpeech(`${this.getLessOftenPhrase()} What about ${selection.title}?`);
 			r.setShouldEndSession(false);
 		} else {
 			r.setSpeech("I'm not sure which idea we were talking about.");
@@ -130,13 +141,22 @@ export class BadIdeaIntent implements Intent {
 }
 
 export class GoodIdeaIntent implements Intent {
+	private getMoreOftenPhrase(): string {
+		const options = [
+			`Ok that idea will come up more often!`,
+			`I'll suggest that more.`,
+			`We will do that every day then.`
+		]
+		return options[Math.floor(Math.random() * options.length)];
+	}
+
 	async execute(state: State): Promise<AlexaResponse> {
 		let r = new AlexaResponse();
 
 		if (state.lastLunchSpot) {
 			alterScore(state.lastLunchSpot.id, 1);
 
-			r.setSpeech(`Ok that idea will come up more often!`);
+			r.setSpeech(this.getMoreOftenPhrase());
 			r.setShouldEndSession(true);
 		} else {
 			r.setSpeech("I'm not sure which idea we were talking about.");

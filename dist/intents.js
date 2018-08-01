@@ -196,6 +196,16 @@ exports.GetIdeaIntent = GetIdeaIntent;
 var BadIdeaIntent = /** @class */ (function () {
     function BadIdeaIntent() {
     }
+    BadIdeaIntent.prototype.getLessOftenPhrase = function () {
+        var options = [
+            "Ok that idea will come up less often.",
+            "I'll suggest that less.",
+            "I'll put a pin in that.",
+            "We'll that's your opinion.",
+            "Everyone else seems to disagree."
+        ];
+        return options[Math.floor(Math.random() * options.length)];
+    };
     BadIdeaIntent.prototype.execute = function (state) {
         return __awaiter(this, void 0, void 0, function () {
             var r, selection;
@@ -212,7 +222,7 @@ var BadIdeaIntent = /** @class */ (function () {
                     case 2:
                         _a.sent();
                         state.lastLunchSpot = selection;
-                        r.setSpeech("Ok that idea will come up less often. What about " + selection.title + "?");
+                        r.setSpeech(this.getLessOftenPhrase() + " What about " + selection.title + "?");
                         r.setShouldEndSession(false);
                         return [3 /*break*/, 4];
                     case 3:
@@ -229,6 +239,14 @@ exports.BadIdeaIntent = BadIdeaIntent;
 var GoodIdeaIntent = /** @class */ (function () {
     function GoodIdeaIntent() {
     }
+    GoodIdeaIntent.prototype.getMoreOftenPhrase = function () {
+        var options = [
+            "Ok that idea will come up more often!",
+            "I'll suggest that more.",
+            "We will do that every day then."
+        ];
+        return options[Math.floor(Math.random() * options.length)];
+    };
     GoodIdeaIntent.prototype.execute = function (state) {
         return __awaiter(this, void 0, void 0, function () {
             var r;
@@ -236,7 +254,7 @@ var GoodIdeaIntent = /** @class */ (function () {
                 r = new response_1.AlexaResponse();
                 if (state.lastLunchSpot) {
                     alterScore(state.lastLunchSpot.id, 1);
-                    r.setSpeech("Ok that idea will come up more often!");
+                    r.setSpeech(this.getMoreOftenPhrase());
                     r.setShouldEndSession(true);
                 }
                 else {

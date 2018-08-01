@@ -3,28 +3,24 @@ Object.defineProperty(exports, "__esModule", { value: true });
 require('dotenv').config();
 var express = require("express");
 var bodyparser = require("body-parser");
-var mysql = require("mysql");
 var response_1 = require("./response");
-var connection = mysql.createConnection(process.env.JAWSDB_URL);
-connection.connect();
-connection.query('SELECT * FROM lunch_spots', function (error, results, fields) {
-    if (error)
-        throw error;
-    results.forEach(function (row) {
-        console.log(row.title);
-    });
-});
-connection.end();
+var intents_1 = require("./intents");
 //insert into lunch_spots (title) values ("Test");
 var app = express();
 var port = parseInt(process.env.PORT);
 app.use(bodyparser.json());
+var intents = {};
+var getidea = new intents_1.GetIdeaIntent();
+intents[getidea.key] = getidea;
 app.post('/api', function (req, res) {
     var context = req.body.context;
     var request = req.body.request;
     var r = new response_1.AlexaResponse();
     if (request.type === 'LaunchRequest') {
         r.setSpeech("Heroku test");
+    }
+    else if (request.type === 'IntentRequest') {
+        r = intents[request.intent.name].execute(request);
     }
     res.send(r.getData());
 });

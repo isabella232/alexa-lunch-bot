@@ -10,5 +10,14 @@ const basePath = '/images/';
 
 export function getRandomImage(hostName: string): URL {
 	const image = imageList[Math.floor(Math.random() * imageList.length)];
-	return new URL(`${hostName}${basePath}${image}`);
+	const urlString = `${hostName}${basePath}${image}`;
+
+	try {
+		const url = new URL(urlString);
+		return url;
+	} catch (err) {
+		console.log(`Error building image url: ${urlString}`)
+	}
+
+	return null;
 }

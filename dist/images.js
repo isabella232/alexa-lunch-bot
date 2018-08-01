@@ -10,6 +10,14 @@ var imageList = [
 var basePath = '/images/';
 function getRandomImage(hostName) {
     var image = imageList[Math.floor(Math.random() * imageList.length)];
-    return new url_1.URL("" + hostName + basePath + image);
+    var urlString = "" + hostName + basePath + image;
+    try {
+        var url = new url_1.URL(urlString);
+        return url;
+    }
+    catch (err) {
+        console.log("Error building image url: " + urlString);
+    }
+    return null;
 }
 exports.getRandomImage = getRandomImage;

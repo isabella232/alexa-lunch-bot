@@ -15,7 +15,7 @@ export class LaunchIntent {
 		r.setReprompt('Try, "Where should I go for lunch"')
 
 		const directive = new BodyTemplate1();
-		directive.setBackgroundImage(getRandomImage(httpRequest.header['host']));
+		directive.setBackgroundImage(getRandomImage(httpRequest.protocol + '://' + httpRequest.get('host')));
 		directive.setTitle('Lunch Bot');
 		r.addDirective(directive);
 

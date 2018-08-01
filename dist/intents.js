@@ -50,7 +50,7 @@ var LaunchIntent = /** @class */ (function () {
                 r.setShouldEndSession(false);
                 r.setReprompt('Try, "Where should I go for lunch"');
                 directive = new response_1.BodyTemplate1();
-                directive.setBackgroundImage(images_1.getRandomImage(httpRequest.header['host']));
+                directive.setBackgroundImage(images_1.getRandomImage(httpRequest.protocol + '://' + httpRequest.get('host')));
                 directive.setTitle('Lunch Bot');
                 r.addDirective(directive);
                 return [2 /*return*/, r];

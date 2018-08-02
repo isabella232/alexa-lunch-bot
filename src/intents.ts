@@ -10,15 +10,17 @@ export interface Intent {
 export class LaunchIntent implements Intent {
 	async execute(): Promise<AlexaResponse> {
 		let r = new AlexaResponse();
-		r.setSpeech("Hi, I can give you some lunch ideas!")
-		r.setReprompt('Try, "Where should I go for lunch"')
-		r.setShouldEndSession(false)
+		r.setSpeech("Hi, I can give you some lunch ideas!");
+		r.setReprompt('Try, "Where should I go for lunch"');
+		r.setShouldEndSession(false);
 
 		const directive = new BodyTemplate1();
 		directive.setBackgroundImage(getRandomBackground());
 		directive.setTitle('Lunch Bot');
-		directive.setPrimaryContent("Ask for a lunch idea, or add a new idea!")
+		directive.setPrimaryContent("Ask for a lunch idea, or add a new idea!");
 		r.addDirective(directive);
+
+		r.setCard('Lunch Bot', "Ask for a lunch idea, or add a new idea!");
 
 		return r;
 	}
@@ -55,6 +57,8 @@ export class GetIdeaIntent implements Intent {
 		directive.setSecondaryContent("You can ask for another!");
 		r.addDirective(directive);
 
+		r.setCard('Lunch Bot', "Was that a good idea?\n You can ask for another!");
+
 		return r;
 	}
 }
@@ -64,9 +68,13 @@ export class BadIdeaIntent implements Intent {
 		const options = [
 			`Ok that idea will come up less often.`,
 			`I'll suggest that less.`,
-			`I'll put a pin in that.`,
-			`We'll that's your opinion.`,
-			`Everyone else seems to disagree.`
+			`I'll just put a pin in that.`,
+			`Well that's your opinion.`,
+			`I didn't think you'd hate it that much...`,
+			`Woah, it was just a bad lunch idea.`,
+			`Everyone else seems to disagree.`,
+			`Well all the other bots like that spot.`,
+			`I'm doing my best here.`
 		]
 		return options[Math.floor(Math.random() * options.length)];
 	}
@@ -96,6 +104,9 @@ export class GoodIdeaIntent implements Intent {
 		const options = [
 			`Ok that idea will come up more often!`,
 			`I'll suggest that more.`,
+			`Don't get too excited, it's just lunch.`,
+			`I'm a Lunch Bot, good ideas are kind of my thing.`,
+			`Woah, it was just a good lunch idea.`,
 			`We will do that every day then.`,
 			`Enjoy, goodbye.`,
 			`Glad I could help.`

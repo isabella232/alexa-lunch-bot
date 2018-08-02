@@ -37,7 +37,9 @@ export declare class BodyTemplate2 implements AlexaDirective {
 }
 export declare class AlexaResponse {
     private data;
+    private directives;
     setShouldEndSession(shouldEnd: boolean): void;
+    setCard(title: string, content: string): void;
     setReprompt(msg: string): void;
     setSpeech(msg: string): void;
     addDirective(directive: AlexaDirective): void;

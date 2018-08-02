@@ -117,10 +117,18 @@ var AlexaResponse = /** @class */ (function () {
                 directives: []
             }
         };
+        this.directives = [];
     }
     // Should alexa end the skill after this response? Default is true
     AlexaResponse.prototype.setShouldEndSession = function (shouldEnd) {
         this.data.response.shouldEndSession = shouldEnd;
+    };
+    AlexaResponse.prototype.setCard = function (title, content) {
+        this.data.response.card = {
+            type: "Simple",
+            title: title,
+            content: content
+        };
     };
     // If the user makes a follow up statement that doesn't match anything in our skill Alexa will say the "reprompt"
     AlexaResponse.prototype.setReprompt = function (msg) {
@@ -139,7 +147,7 @@ var AlexaResponse = /** @class */ (function () {
         };
     };
     AlexaResponse.prototype.addDirective = function (directive) {
-        this.data.response.directives.push(directive.getData());
+        this.directives.push(directive);
     };
     AlexaResponse.prototype.getData = function () {
         return this.data;

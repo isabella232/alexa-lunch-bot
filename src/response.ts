@@ -145,9 +145,19 @@ export class AlexaResponse {
 		}
 	};
 
+	private directives: AlexaDirective[] = [];
+
 	// Should alexa end the skill after this response? Default is true
 	public setShouldEndSession(shouldEnd: boolean) {
 		this.data.response.shouldEndSession = shouldEnd;
+	}
+
+	public setCard(title: string, content: string) {
+		this.data.response.card = {
+			type: "Simple",
+			title: title,
+			content: content
+		}
 	}
 
 	// If the user makes a follow up statement that doesn't match anything in our skill Alexa will say the "reprompt"
@@ -169,7 +179,7 @@ export class AlexaResponse {
 	}
 
 	public addDirective(directive: AlexaDirective) {
-		this.data.response.directives.push(directive.getData())
+		this.directives.push(directive)
 	}
 
 	public getData() {

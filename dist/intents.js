@@ -218,6 +218,7 @@ var AddIdeaIntent = /** @class */ (function () {
                         _a.lastLunchSpot = _b.sent();
                         r.setSpeech(this.getAddedPhrase(title));
                         r.setShouldEndSession(false);
+                        r.setReprompt("You can ask for an idea, or add another lunch spot!");
                         return [3 /*break*/, 5];
                     case 3:
                         err_1 = _b.sent();

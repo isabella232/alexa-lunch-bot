@@ -1,10 +1,10 @@
 import { URL } from "url";
 
 const imageList = [
-	'appetizer-dark-delicious-326279.jpg',
-	'basil-delicious-food-459469.jpg',
-	'carrots-food-fresh-616404.jpg',
-	'dish-egg-food-54455.jpg'
+	'cook-food-kitchen-eat-54455.jpeg',
+	'pexels-photo-326281.jpeg',
+	'pexels-photo-459469.jpeg',
+	'pexels-photo-952356.jpeg'
 ];
 const basePath = '/images/';
 

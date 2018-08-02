@@ -131,6 +131,7 @@ export class AddIdeaIntent implements Intent {
 
 			r.setSpeech(this.getAddedPhrase(title));
 			r.setShouldEndSession(false);
+			r.setReprompt("You can ask for an idea, or add another lunch spot!")
 		} catch (err) {
 			console.log(err);
 			r.setSpeech("I'm pretty sure that was already on the list.");

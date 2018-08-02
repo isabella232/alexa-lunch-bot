@@ -157,7 +157,9 @@ var GoodIdeaIntent = /** @class */ (function () {
         var options = [
             "Ok that idea will come up more often!",
             "I'll suggest that more.",
-            "We will do that every day then."
+            "We will do that every day then.",
+            "Enjoy, goodbye.",
+            "Glad I could help."
         ];
         return options[Math.floor(Math.random() * options.length)];
     };

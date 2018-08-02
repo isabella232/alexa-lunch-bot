@@ -3,21 +3,22 @@ import * as express from 'express';
 import * as bodyparser from 'body-parser';
 import { AlexaResponse } from './response';
 import * as Intents from './intents';
-import { LunchSpot } from './lunch-spot';
 import { State } from './state';
 
 const state = new State();
 const app: express.Application = express();
 app.use(bodyparser.json());
 
-const launchIntent = new Intents.LaunchIntent();
-const exitIntent = new Intents.ExitIntent();
-const intents = {};
-intents['getidea'] = new Intents.GetIdeaIntent();
-intents['addidea'] = new Intents.AddIdeaIntent();
-intents['goodidea'] = new Intents.GoodIdeaIntent();
-intents['badidea'] = new Intents.BadIdeaIntent();
-intents['exit'] = new Intents.ExitIntent();
+const launchIntent: Intents.Intent = new Intents.LaunchIntent();
+const exitIntent: Intents.Intent = new Intents.ExitIntent();
+const intents = {
+	getidea: new Intents.GetIdeaIntent(),
+	addidea: new Intents.AddIdeaIntent(),
+	removeidea: new Intents.RemoveLastIdeaIntent(),
+	goodidea: new Intents.GoodIdeaIntent(),
+	badidea: new Intents.BadIdeaIntent(),
+	exit: new Intents.ExitIntent()
+};
 
 app.post('/api', (req, res) => {
 	const alexaContext = req.body.context;
@@ -37,11 +38,12 @@ app.post('/api', (req, res) => {
 				else
 					r.setSpeech("I'm not sure what to do.");
 			} else if (alexaRequest.type === 'SessionEndedRequest') {
-				r = await launchIntent.execute(state, alexaRequest);
+				r = await exitIntent.execute(state, alexaRequest);
 				state.lastLunchSpot = null;
 			}
 		} catch (err) {
 			console.log("Error while creating response.", err);
+			r.setSpeech("Something went wrong with the skill.");
 		}
 
 		res.send(r.getData());
@@ -49,8 +51,8 @@ app.post('/api', (req, res) => {
 });
 
 app.use('/images/', express.static('images'));
-app.use('/', function(req, res) {
-	res.send("");
+app.use('/', function(_req, res) {
+	res.send("<html><body><h1>Lunch Bot</h1><p>This is the api server for the Lunch Bot alexa skill.</p></body></html>");
 });
 
 app.listen(process.env.PORT, () => {

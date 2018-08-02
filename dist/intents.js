@@ -37,99 +37,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var response_1 = require("./response");
 var images_1 = require("./images");
-var lunch_spot_1 = require("./lunch-spot");
-var mysql = require("mysql");
-function getRandomIdea() {
-    return __awaiter(this, void 0, void 0, function () {
-        var options, selection;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, getAllSpots()];
-                case 1:
-                    options = _a.sent();
-                    selection = options[Math.floor(Math.random() * options.length)];
-                    return [2 /*return*/, selection];
-            }
-        });
-    });
-}
-function getAllSpots() {
-    return __awaiter(this, void 0, void 0, function () {
-        var connection, options;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    connection = mysql.createConnection(process.env.JAWSDB_URL);
-                    connection.connect();
-                    return [4 /*yield*/, (new Promise(function (resolve, reject) {
-                            connection.query('select * from lunch_spots order by lastSuggested ASC, score DESC limit 5', function (error, results) {
-                                if (error)
-                                    reject(error);
-                                var spots = [];
-                                results.forEach(function (row) {
-                                    spots.push(new lunch_spot_1.LunchSpot(row));
-                                });
-                                resolve(spots);
-                            });
-                        }))];
-                case 1:
-                    options = _a.sent();
-                    connection.end();
-                    return [2 /*return*/, options];
-            }
-        });
-    });
-}
-function alterScore(id, amount) {
-    return __awaiter(this, void 0, void 0, function () {
-        var connection;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    connection = mysql.createConnection(process.env.JAWSDB_URL);
-                    connection.connect();
-                    return [4 /*yield*/, (new Promise(function (resolve, reject) {
-                            connection.query('UPDATE lunch_spots SET score = score + ? WHERE id = ?', [amount, id], function (error) {
-                                if (error)
-                                    reject(error);
-                                resolve();
-                            });
-                        }))];
-                case 1:
-                    _a.sent();
-                    connection.end();
-                    return [2 /*return*/];
-            }
-        });
-    });
-}
-function setDate(id) {
-    return __awaiter(this, void 0, void 0, function () {
-        var connection;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    connection = mysql.createConnection(process.env.JAWSDB_URL);
-                    connection.connect();
-                    return [4 /*yield*/, (new Promise(function (resolve, reject) {
-                            connection.query('UPDATE lunch_spots SET lastSuggested = NOW() where id = ?', [id], function (error) {
-                                if (error)
-                                    reject(error);
-                                resolve();
-                            });
-                        }))];
-                case 1:
-                    _a.sent();
-                    connection.end();
-                    return [2 /*return*/];
-            }
-        });
-    });
-}
+var db = require("./database");
 var LaunchIntent = /** @class */ (function () {
     function LaunchIntent() {
     }
-    LaunchIntent.prototype.execute = function (state, alexaRequest) {
+    LaunchIntent.prototype.execute = function () {
         return __awaiter(this, void 0, void 0, function () {
             var r, directive;
             return __generator(this, function (_a) {
@@ -152,7 +64,7 @@ exports.LaunchIntent = LaunchIntent;
 var ExitIntent = /** @class */ (function () {
     function ExitIntent() {
     }
-    ExitIntent.prototype.execute = function (state, alexaRequest) {
+    ExitIntent.prototype.execute = function () {
         return __awaiter(this, void 0, void 0, function () {
             var r;
             return __generator(this, function (_a) {
@@ -174,10 +86,10 @@ var GetIdeaIntent = /** @class */ (function () {
             var selection, r;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, getRandomIdea()];
+                    case 0: return [4 /*yield*/, db.getRandomIdea()];
                     case 1:
                         selection = _a.sent();
-                        return [4 /*yield*/, setDate(selection.id)];
+                        return [4 /*yield*/, db.setDate(selection.id)];
                     case 2:
                         _a.sent();
                         state.lastLunchSpot = selection;
@@ -213,22 +125,24 @@ var BadIdeaIntent = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         r = new response_1.AlexaResponse();
-                        if (!state.lastLunchSpot) return [3 /*break*/, 3];
-                        alterScore(state.lastLunchSpot.id, -1);
-                        return [4 /*yield*/, getRandomIdea()];
+                        if (!state.lastLunchSpot) return [3 /*break*/, 4];
+                        return [4 /*yield*/, db.alterScore(state.lastLunchSpot.id, -1)];
                     case 1:
-                        selection = _a.sent();
-                        return [4 /*yield*/, setDate(selection.id)];
+                        _a.sent();
+                        return [4 /*yield*/, db.getRandomIdea()];
                     case 2:
+                        selection = _a.sent();
+                        return [4 /*yield*/, db.setDate(selection.id)];
+                    case 3:
                         _a.sent();
                         state.lastLunchSpot = selection;
                         r.setSpeech(this.getLessOftenPhrase() + " What about " + selection.title + "?");
                         r.setShouldEndSession(false);
-                        return [3 /*break*/, 4];
-                    case 3:
+                        return [3 /*break*/, 5];
+                    case 4:
                         r.setSpeech("I'm not sure which idea we were talking about.");
-                        _a.label = 4;
-                    case 4: return [2 /*return*/, r];
+                        _a.label = 5;
+                    case 5: return [2 /*return*/, r];
                 }
             });
         });
@@ -251,16 +165,21 @@ var GoodIdeaIntent = /** @class */ (function () {
         return __awaiter(this, void 0, void 0, function () {
             var r;
             return __generator(this, function (_a) {
-                r = new response_1.AlexaResponse();
-                if (state.lastLunchSpot) {
-                    alterScore(state.lastLunchSpot.id, 1);
-                    r.setSpeech(this.getMoreOftenPhrase());
-                    r.setShouldEndSession(true);
+                switch (_a.label) {
+                    case 0:
+                        r = new response_1.AlexaResponse();
+                        if (!state.lastLunchSpot) return [3 /*break*/, 2];
+                        return [4 /*yield*/, db.alterScore(state.lastLunchSpot.id, 1)];
+                    case 1:
+                        _a.sent();
+                        r.setSpeech(this.getMoreOftenPhrase());
+                        r.setShouldEndSession(true);
+                        return [3 /*break*/, 3];
+                    case 2:
+                        r.setSpeech("I'm not sure which idea we were talking about.");
+                        _a.label = 3;
+                    case 3: return [2 /*return*/, r];
                 }
-                else {
-                    r.setSpeech("I'm not sure which idea we were talking about.");
-                }
-                return [2 /*return*/, r];
             });
         });
     };
@@ -270,40 +189,41 @@ exports.GoodIdeaIntent = GoodIdeaIntent;
 var AddIdeaIntent = /** @class */ (function () {
     function AddIdeaIntent() {
     }
+    AddIdeaIntent.prototype.getAddedPhrase = function (title) {
+        var options = [
+            "I added " + title + " to the list.",
+            "Ok, " + title + " has been added to the list!",
+            title + " was added.",
+            "I'll make sure everyone goes to " + title + "!",
+            title + " is an excellent idea!"
+        ];
+        return options[Math.floor(Math.random() * options.length)];
+    };
     AddIdeaIntent.prototype.execute = function (state, alexaRequest) {
         return __awaiter(this, void 0, void 0, function () {
-            var r, connection, title_1, err_1;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var r, title, _a, err_1;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
                     case 0:
                         r = new response_1.AlexaResponse();
-                        connection = mysql.createConnection(process.env.JAWSDB_URL);
-                        connection.connect();
-                        _a.label = 1;
+                        _b.label = 1;
                     case 1:
-                        _a.trys.push([1, 3, 4, 5]);
-                        title_1 = alexaRequest.intent.slots.spot.value;
-                        return [4 /*yield*/, (new Promise(function (resolve, reject) {
-                                connection.query('Insert into lunch_spots SET ?', { title: title_1 }, function (error) {
-                                    if (error)
-                                        reject(error);
-                                    resolve();
-                                });
-                            }))];
+                        _b.trys.push([1, 3, 4, 5]);
+                        title = alexaRequest.intent.slots.spot.value;
+                        _a = state;
+                        return [4 /*yield*/, db.addIdea(title)];
                     case 2:
-                        _a.sent();
-                        r.setSpeech("Ok, " + title_1 + " has been added to the list!");
+                        _a.lastLunchSpot = _b.sent();
+                        r.setSpeech(this.getAddedPhrase(title));
                         r.setShouldEndSession(false);
                         return [3 /*break*/, 5];
                     case 3:
-                        err_1 = _a.sent();
+                        err_1 = _b.sent();
                         console.log(err_1);
                         r.setSpeech("I'm pretty sure that was already on the list.");
                         r.setShouldEndSession(false);
                         return [3 /*break*/, 5];
-                    case 4:
-                        connection.end();
-                        return [2 /*return*/, r];
+                    case 4: return [2 /*return*/, r];
                     case 5: return [2 /*return*/];
                 }
             });
@@ -312,3 +232,42 @@ var AddIdeaIntent = /** @class */ (function () {
     return AddIdeaIntent;
 }());
 exports.AddIdeaIntent = AddIdeaIntent;
+var RemoveLastIdeaIntent = /** @class */ (function () {
+    function RemoveLastIdeaIntent() {
+    }
+    RemoveLastIdeaIntent.prototype.getRemovedPhrase = function (title) {
+        var options = [
+            "I removed " + title + ".",
+            title + " was deleted.",
+            "You're right " + title + " was a terrible idea.",
+            title + " was never going to work out anyway."
+        ];
+        return options[Math.floor(Math.random() * options.length)];
+    };
+    RemoveLastIdeaIntent.prototype.execute = function (state) {
+        return __awaiter(this, void 0, void 0, function () {
+            var r, title;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        r = new response_1.AlexaResponse();
+                        if (!state.lastLunchSpot) return [3 /*break*/, 2];
+                        return [4 /*yield*/, db.removeIdea(state.lastLunchSpot.id)];
+                    case 1:
+                        _a.sent();
+                        title = state.lastLunchSpot.title;
+                        state.lastLunchSpot = null;
+                        r.setSpeech(this.getRemovedPhrase(title));
+                        r.setShouldEndSession(true);
+                        return [3 /*break*/, 3];
+                    case 2:
+                        r.setSpeech("I'm not sure which idea we were talking about.");
+                        _a.label = 3;
+                    case 3: return [2 /*return*/, r];
+                }
+            });
+        });
+    };
+    return RemoveLastIdeaIntent;
+}());
+exports.RemoveLastIdeaIntent = RemoveLastIdeaIntent;

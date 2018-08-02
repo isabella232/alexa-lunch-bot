@@ -1,72 +1,14 @@
 import { AlexaResponse, BodyTemplate1 } from './response';
 import { getRandomImage } from './images';
 import { State } from './state';
-import { LunchSpot } from './lunch-spot';
-import { Request } from 'express';
-import * as mysql from 'mysql';
+import * as db from './database';
 
-async function getRandomIdea(): Promise<LunchSpot> {
-	const options = await getAllSpots();
-
-	// Pick a random one
-	const selection = options[Math.floor(Math.random() * options.length)];
-	return selection;
-}
-
-async function getAllSpots(): Promise<LunchSpot[]> {
-	// Query for all ideas, create and end connection as needed, this isn't called very often
-	const connection = mysql.createConnection(process.env.JAWSDB_URL);
-	connection.connect();
-
-	var options: LunchSpot[] = await (new Promise<LunchSpot[]>((resolve, reject) => {
-		connection.query('select * from lunch_spots order by lastSuggested ASC, score DESC limit 5', function(error, results) {
-			if (error) reject(error);
-
-			let spots: LunchSpot[] = [];
-			results.forEach(function(row) {
-				spots.push(new LunchSpot(row));
-			})
-
-			resolve(spots);
-		});
-	}));
-	connection.end();
-
-	return options;
-}
-
-async function alterScore(id: number, amount: number) {
-	const connection = mysql.createConnection(process.env.JAWSDB_URL);
-	connection.connect();
-
-	await (new Promise<LunchSpot[]>((resolve, reject) => {
-		connection.query('UPDATE lunch_spots SET score = score + ? WHERE id = ?', [amount, id], function(error) {
-			if (error) reject(error);
-			resolve();
-		});
-	}));
-	connection.end();
-}
-
-async function setDate(id: number) {
-	const connection = mysql.createConnection(process.env.JAWSDB_URL);
-	connection.connect();
-
-	await (new Promise<LunchSpot[]>((resolve, reject) => {
-		connection.query('UPDATE lunch_spots SET lastSuggested = NOW() where id = ?', [id], function(error) {
-			if (error) reject(error);
-			resolve();
-		});
-	}));
-	connection.end();
-}
-
-interface Intent {
+export interface Intent {
 	execute: (state: State, alexaRequest: any) => Promise<AlexaResponse>;
 }
 
 export class LaunchIntent implements Intent {
-	async execute(state: State, alexaRequest: any): Promise<AlexaResponse> {
+	async execute(): Promise<AlexaResponse> {
 		let r = new AlexaResponse();
 		r.setSpeech("Hi, I can give you some lunch ideas!")
 		r.setReprompt('Try, "Where should I go for lunch"')
@@ -83,7 +25,7 @@ export class LaunchIntent implements Intent {
 }
 
 export class ExitIntent implements Intent {
-	async execute(state: State, alexaRequest: any): Promise<AlexaResponse> {
+	async execute(): Promise<AlexaResponse> {
 		let r = new AlexaResponse();
 		r.setSpeech("Ok, goodbye!")
 		r.setShouldEndSession(true)
@@ -95,8 +37,8 @@ export class ExitIntent implements Intent {
 export class GetIdeaIntent implements Intent {
 	async execute(state: State): Promise<AlexaResponse> {
 		// Pick a random one
-		const selection = await getRandomIdea();
-		await setDate(selection.id);
+		const selection = await db.getRandomIdea();
+		await db.setDate(selection.id);
 		state.lastLunchSpot = selection;
 
 		// Respond
@@ -124,10 +66,10 @@ export class BadIdeaIntent implements Intent {
 		let r = new AlexaResponse();
 
 		if (state.lastLunchSpot) {
-			alterScore(state.lastLunchSpot.id, -1);
+			await db.alterScore(state.lastLunchSpot.id, -1);
 
-			const selection = await getRandomIdea();
-			await setDate(selection.id);
+			const selection = await db.getRandomIdea();
+			await db.setDate(selection.id);
 			state.lastLunchSpot = selection;
 
 			r.setSpeech(`${this.getLessOftenPhrase()} What about ${selection.title}?`);
@@ -154,7 +96,7 @@ export class GoodIdeaIntent implements Intent {
 		let r = new AlexaResponse();
 
 		if (state.lastLunchSpot) {
-			alterScore(state.lastLunchSpot.id, 1);
+			await db.alterScore(state.lastLunchSpot.id, 1);
 
 			r.setSpeech(this.getMoreOftenPhrase());
 			r.setShouldEndSession(true);
@@ -167,31 +109,61 @@ export class GoodIdeaIntent implements Intent {
 }
 
 export class AddIdeaIntent implements Intent {
+	private getAddedPhrase(title: string): string {
+		const options = [
+			`I added ${title} to the list.`,
+			`Ok, ${title} has been added to the list!`,
+			`${title} was added.`,
+			`I'll make sure everyone goes to ${title}!`,
+			`${title} is an excellent idea!`
+		]
+		return options[Math.floor(Math.random() * options.length)];
+	}
+
 	async execute(state: State, alexaRequest: any): Promise<AlexaResponse> {
 		let r = new AlexaResponse();
 
-		const connection = mysql.createConnection(process.env.JAWSDB_URL);
-		connection.connect();
 		try {
 			const title: string = alexaRequest.intent.slots.spot.value;
+			state.lastLunchSpot = await db.addIdea(title);
 
-			await (new Promise((resolve, reject) => {
-				connection.query('Insert into lunch_spots SET ?', { title }, function(error) {
-					if (error) reject(error);
-
-					resolve();
-				});
-			}));
-
-			r.setSpeech(`Ok, ${title} has been added to the list!`);
+			r.setSpeech(this.getAddedPhrase(title));
 			r.setShouldEndSession(false);
 		} catch (err) {
 			console.log(err);
 			r.setSpeech("I'm pretty sure that was already on the list.");
 			r.setShouldEndSession(false);
 		} finally {
-			connection.end();
 			return r;
 		}
+	}
+}
+
+export class RemoveLastIdeaIntent implements Intent {
+	private getRemovedPhrase(title: string): string {
+		const options = [
+			`I removed ${title}.`,
+			`${title} was deleted.`,
+			`You're right ${title} was a terrible idea.`,
+			`${title} was never going to work out anyway.`
+		]
+		return options[Math.floor(Math.random() * options.length)];
+	}
+
+	async execute(state: State): Promise<AlexaResponse> {
+		let r = new AlexaResponse();
+
+		if (state.lastLunchSpot) {
+			await db.removeIdea(state.lastLunchSpot.id);
+			const title = state.lastLunchSpot.title;
+			state.lastLunchSpot = null;
+
+			r.setSpeech(this.getRemovedPhrase(title));
+			r.setShouldEndSession(true);
+		} else {
+			r.setSpeech("I'm not sure which idea we were talking about.");
+		}
+
+		return r;
 	}
 }

@@ -46,12 +46,14 @@ var app = express();
 app.use(bodyparser.json());
 var launchIntent = new Intents.LaunchIntent();
 var exitIntent = new Intents.ExitIntent();
-var intents = {};
-intents['getidea'] = new Intents.GetIdeaIntent();
-intents['addidea'] = new Intents.AddIdeaIntent();
-intents['goodidea'] = new Intents.GoodIdeaIntent();
-intents['badidea'] = new Intents.BadIdeaIntent();
-intents['exit'] = new Intents.ExitIntent();
+var intents = {
+    getidea: new Intents.GetIdeaIntent(),
+    addidea: new Intents.AddIdeaIntent(),
+    removeidea: new Intents.RemoveLastIdeaIntent(),
+    goodidea: new Intents.GoodIdeaIntent(),
+    badidea: new Intents.BadIdeaIntent(),
+    exit: new Intents.ExitIntent()
+};
 app.post('/api', function (req, res) {
     var alexaContext = req.body.context;
     var alexaRequest = req.body.request;
@@ -83,7 +85,7 @@ app.post('/api', function (req, res) {
                     case 5: return [3 /*break*/, 8];
                     case 6:
                         if (!(alexaRequest.type === 'SessionEndedRequest')) return [3 /*break*/, 8];
-                        return [4 /*yield*/, launchIntent.execute(state, alexaRequest)];
+                        return [4 /*yield*/, exitIntent.execute(state, alexaRequest)];
                     case 7:
                         r = _a.sent();
                         state.lastLunchSpot = null;
@@ -92,6 +94,7 @@ app.post('/api', function (req, res) {
                     case 9:
                         err_1 = _a.sent();
                         console.log("Error while creating response.", err_1);
+                        r.setSpeech("Something went wrong with the skill.");
                         return [3 /*break*/, 10];
                     case 10:
                         res.send(r.getData());
@@ -102,8 +105,8 @@ app.post('/api', function (req, res) {
     })();
 });
 app.use('/images/', express.static('images'));
-app.use('/', function (req, res) {
-    res.send("");
+app.use('/', function (_req, res) {
+    res.send("<html><body><h1>Lunch Bot</h1><p>This is the api server for the Lunch Bot alexa skill.</p></body></html>");
 });
 app.listen(process.env.PORT, function () {
     // Success callback

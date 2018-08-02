@@ -52,7 +52,8 @@ var intents = {
     removeidea: new Intents.RemoveLastIdeaIntent(),
     goodidea: new Intents.GoodIdeaIntent(),
     badidea: new Intents.BadIdeaIntent(),
-    exit: new Intents.ExitIntent()
+    "AMAZON.StopIntent": new Intents.ExitIntent(),
+    "AMAZON.CancelIntent": new Intents.ExitIntent()
 };
 app.post('/api', function (req, res) {
     var alexaContext = req.body.context;

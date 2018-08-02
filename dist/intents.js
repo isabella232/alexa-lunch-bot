@@ -50,7 +50,7 @@ var LaunchIntent = /** @class */ (function () {
                 r.setReprompt('Try, "Where should I go for lunch"');
                 r.setShouldEndSession(false);
                 directive = new response_1.BodyTemplate1();
-                directive.setBackgroundImage(images_1.getRandomImage());
+                directive.setBackgroundImage(images_1.getRandomBackground());
                 directive.setTitle('Lunch Bot');
                 directive.setPrimaryContent("Ask for a lunch idea, or add a new idea!");
                 r.addDirective(directive);
@@ -83,7 +83,7 @@ var GetIdeaIntent = /** @class */ (function () {
     }
     GetIdeaIntent.prototype.execute = function (state) {
         return __awaiter(this, void 0, void 0, function () {
-            var selection, r;
+            var selection, r, directive;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, db.getRandomIdea()];
@@ -97,6 +97,13 @@ var GetIdeaIntent = /** @class */ (function () {
                         r.setSpeech("How does " + selection.title + " sound?");
                         r.setShouldEndSession(false);
                         r.setReprompt("You can say \"That's a bad idea\" or \"That'll do pig\"");
+                        directive = new response_1.BodyTemplate2();
+                        directive.setBackgroundImage(images_1.getRandomBackground());
+                        directive.setImage(images_1.getRandomIcon());
+                        directive.setTitle('Lunch Bot');
+                        directive.setPrimaryContent("Was that a good idea?");
+                        directive.setSecondaryContent("You can ask for another!");
+                        r.addDirective(directive);
                         return [2 /*return*/, r];
                 }
             });

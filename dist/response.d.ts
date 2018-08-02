@@ -25,6 +25,16 @@ export declare class BodyTemplate1 implements AlexaDirective {
     setTertiaryContent(msg: string): void;
     getData(): any;
 }
+export declare class BodyTemplate2 implements AlexaDirective {
+    private data;
+    setBackgroundImage(url: URL): void;
+    setImage(url: URL): void;
+    setTitle(title: string): void;
+    setPrimaryContent(msg: string): void;
+    setSecondaryContent(msg: string): void;
+    setTertiaryContent(msg: string): void;
+    getData(): any;
+}
 export declare class AlexaResponse {
     private data;
     setShouldEndSession(shouldEnd: boolean): void;

@@ -53,6 +53,62 @@ var BodyTemplate1 = /** @class */ (function () {
     return BodyTemplate1;
 }());
 exports.BodyTemplate1 = BodyTemplate1;
+var BodyTemplate2 = /** @class */ (function () {
+    function BodyTemplate2() {
+        this.data = {
+            type: "Display.RenderTemplate",
+            token: "aToken",
+            template: {
+                type: "BodyTemplate2",
+                backButton: "HIDDEN",
+                textContent: {},
+                title: "",
+                backgroundImage: {},
+                image: {}
+            }
+        };
+    }
+    BodyTemplate2.prototype.setBackgroundImage = function (url) {
+        this.data.template.backgroundImage = {
+            sources: [{
+                    url: url.toString()
+                }]
+        };
+    };
+    BodyTemplate2.prototype.setImage = function (url) {
+        this.data.template.image = {
+            sources: [{
+                    url: url.toString()
+                }]
+        };
+    };
+    BodyTemplate2.prototype.setTitle = function (title) {
+        this.data.template.title = title;
+    };
+    BodyTemplate2.prototype.setPrimaryContent = function (msg) {
+        this.data.template.textContent.primaryText = {
+            text: msg,
+            type: "PlainText"
+        };
+    };
+    BodyTemplate2.prototype.setSecondaryContent = function (msg) {
+        this.data.template.textContent.secondaryText = {
+            text: msg,
+            type: "PlainText"
+        };
+    };
+    BodyTemplate2.prototype.setTertiaryContent = function (msg) {
+        this.data.template.textContent.tertiaryText = {
+            text: msg,
+            type: "PlainText"
+        };
+    };
+    BodyTemplate2.prototype.getData = function () {
+        return this.data;
+    };
+    return BodyTemplate2;
+}());
+exports.BodyTemplate2 = BodyTemplate2;
 var AlexaResponse = /** @class */ (function () {
     function AlexaResponse() {
         this.data = {

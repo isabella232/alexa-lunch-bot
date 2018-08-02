@@ -1,5 +1,5 @@
-import { AlexaResponse, BodyTemplate1 } from './response';
-import { getRandomImage } from './images';
+import { AlexaResponse, BodyTemplate1, BodyTemplate2 } from './response';
+import { getRandomIcon, getRandomBackground } from './images';
 import { State } from './state';
 import * as db from './database';
 
@@ -15,7 +15,7 @@ export class LaunchIntent implements Intent {
 		r.setShouldEndSession(false)
 
 		const directive = new BodyTemplate1();
-		directive.setBackgroundImage(getRandomImage());
+		directive.setBackgroundImage(getRandomBackground());
 		directive.setTitle('Lunch Bot');
 		directive.setPrimaryContent("Ask for a lunch idea, or add a new idea!")
 		r.addDirective(directive);
@@ -46,6 +46,15 @@ export class GetIdeaIntent implements Intent {
 		r.setSpeech(`How does ${selection.title} sound?`);
 		r.setShouldEndSession(false);
 		r.setReprompt(`You can say "That's a bad idea" or "That'll do pig"`);
+
+		const directive = new BodyTemplate2();
+		directive.setBackgroundImage(getRandomBackground());
+		directive.setImage(getRandomIcon());
+		directive.setTitle('Lunch Bot');
+		directive.setPrimaryContent("Was that a good idea?");
+		directive.setSecondaryContent("You can ask for another!");
+		r.addDirective(directive);
+
 		return r;
 	}
 }

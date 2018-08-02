@@ -78,6 +78,64 @@ export class BodyTemplate1 implements AlexaDirective {
 	}
 }
 
+export class BodyTemplate2 implements AlexaDirective {
+	private data = {
+		type: "Display.RenderTemplate",
+		token: "aToken",
+		template: {
+			type: "BodyTemplate2",
+			backButton: "HIDDEN",
+			textContent: <TextContent>{},
+			title: "",
+			backgroundImage: <Image>{},
+			image: <Image>{}
+		}
+	};
+
+	public setBackgroundImage(url: URL) {
+		this.data.template.backgroundImage = {
+			sources: [{
+				url: url.toString()
+			}]
+		}
+	}
+
+	public setImage(url: URL) {
+		this.data.template.image = {
+			sources: [{
+				url: url.toString()
+			}]
+		}
+	}
+
+	public setTitle(title: string) {
+		this.data.template.title = title;
+	}
+
+	public setPrimaryContent(msg: string) {
+		this.data.template.textContent.primaryText = {
+			text: msg,
+			type: "PlainText"
+		}
+	}
+	public setSecondaryContent(msg: string) {
+		this.data.template.textContent.secondaryText = {
+			text: msg,
+			type: "PlainText"
+		}
+	}
+	public setTertiaryContent(msg: string) {
+		this.data.template.textContent.tertiaryText = {
+			text: msg,
+			type: "PlainText"
+		}
+	}
+
+	public getData(): any {
+		return this.data;
+	}
+}
+
 export class AlexaResponse {
 
 	private data = {

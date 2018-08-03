@@ -73,15 +73,16 @@ const ideaPhrases = [
 ];
 app.post('/slack', async (req, res) => {
 	let payload = req.body;
-	res.sendStatus(200);
+	res.statusCode = 200;
 
 	if (payload.challenge) {
+		res.header['Content-Type'] = 'application/json';
 		res.send({ challenge: payload.challenge });
 		return;
 	}
 
 	if (payload.event.type === "app_mention") {
-		if (ideaPhrases.some((msg) => { return payload.event.text.includes(msg) })) {
+		if (ideaPhrases.some((msg) => { return payload.event.text.includes(msg) && payload.event.text.includes("@alexalunchbot") })) {
 			(async () => {
 				const idea: LunchSpot = await db.getRandomIdea();
 				sendSlackText(`Go to ${idea.title}!`);

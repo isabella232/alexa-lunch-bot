@@ -129,13 +129,14 @@ app.post('/slack', function (req, res) { return __awaiter(_this, void 0, void 0,
     var _this = this;
     return __generator(this, function (_a) {
         payload = req.body;
-        res.sendStatus(200);
+        res.statusCode = 200;
         if (payload.challenge) {
+            res.header['Content-Type'] = 'application/json';
             res.send({ challenge: payload.challenge });
             return [2 /*return*/];
         }
         if (payload.event.type === "app_mention") {
-            if (ideaPhrases.some(function (msg) { return payload.event.text.includes(msg); })) {
+            if (ideaPhrases.some(function (msg) { return payload.event.text.includes(msg) && payload.event.text.includes("@alexalunchbot"); })) {
                 (function () { return __awaiter(_this, void 0, void 0, function () {
                     var idea;
                     return __generator(this, function (_a) {

@@ -197,7 +197,7 @@ var GoodIdeaIntent = /** @class */ (function () {
                                 method: 'POST',
                                 json: true,
                                 body: {
-                                    text: "A lunch group is going to " + state.lastLunchSpot.title + ", probably."
+                                    text: "@here A lunch group is going to " + state.lastLunchSpot.title + ", probably."
                                 }
                             });
                         }

@@ -3,6 +3,9 @@ import * as express from 'express';
 import * as bodyparser from 'body-parser';
 import { AlexaResponse } from './response';
 import * as Intents from './intents';
+import * as request from 'request';
+import * as db from './database';
+import { LunchSpot } from './lunch-spot';
 import { State } from './state';
 
 const state = new State();
@@ -49,6 +52,43 @@ app.post('/api', (req, res) => {
 
 		res.send(r.getData());
 	})();
+});
+
+function sendSlackText(msg: string) {
+	request({
+		url: process.env.SLACK_HOOK,
+		method: 'POST',
+		json: true,
+		body: {
+			text: msg
+		}
+	});
+}
+
+const ideaPhrases = [
+	'food me',
+	'idea',
+	'hyly',
+	'where'
+];
+app.post('/slack', async (req, res) => {
+	let payload = req.body;
+	res.sendStatus(200);
+
+	if (payload.challenge) {
+		res.send({ challenge: payload.challenge });
+		return;
+	}
+
+	if (payload.event.type === "app_mention") {
+		if (ideaPhrases.some((msg) => { return payload.event.text.includes(msg) })) {
+			(async () => {
+				const idea: LunchSpot = await db.getRandomIdea();
+				sendSlackText(`Go to ${idea.title}!`);
+			})();
+			return;
+		}
+	}
 });
 
 app.use('/images/', express.static('images'));

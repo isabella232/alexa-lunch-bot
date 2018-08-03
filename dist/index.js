@@ -34,12 +34,15 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var _this = this;
 Object.defineProperty(exports, "__esModule", { value: true });
 require('dotenv').config();
 var express = require("express");
 var bodyparser = require("body-parser");
 var response_1 = require("./response");
 var Intents = require("./intents");
+var request = require("request");
+var db = require("./database");
 var state_1 = require("./state");
 var state = new state_1.State();
 var app = express();
@@ -105,6 +108,52 @@ app.post('/api', function (req, res) {
         });
     })();
 });
+function sendSlackText(msg) {
+    request({
+        url: process.env.SLACK_HOOK,
+        method: 'POST',
+        json: true,
+        body: {
+            text: msg
+        }
+    });
+}
+var ideaPhrases = [
+    'food me',
+    'idea',
+    'hyly',
+    'where'
+];
+app.post('/slack', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+    var payload;
+    var _this = this;
+    return __generator(this, function (_a) {
+        payload = req.body;
+        res.sendStatus(200);
+        if (payload.challenge) {
+            res.send({ challenge: payload.challenge });
+            return [2 /*return*/];
+        }
+        if (payload.event.type === "app_mention") {
+            if (ideaPhrases.some(function (msg) { return payload.event.text.includes(msg); })) {
+                (function () { return __awaiter(_this, void 0, void 0, function () {
+                    var idea;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0: return [4 /*yield*/, db.getRandomIdea()];
+                            case 1:
+                                idea = _a.sent();
+                                sendSlackText("Go to " + idea.title + "!");
+                                return [2 /*return*/];
+                        }
+                    });
+                }); })();
+                return [2 /*return*/];
+            }
+        }
+        return [2 /*return*/];
+    });
+}); });
 app.use('/images/', express.static('images'));
 app.use('/', function (_req, res) {
     res.send("<html><body><h1>Lunch Bot</h1><p>This is the api server for the Lunch Bot alexa skill.</p></body></html>");

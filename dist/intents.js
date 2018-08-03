@@ -91,9 +91,6 @@ var GetIdeaIntent = /** @class */ (function () {
                     case 0: return [4 /*yield*/, db.getRandomIdea()];
                     case 1:
                         selection = _a.sent();
-                        return [4 /*yield*/, db.setDate(selection.id)];
-                    case 2:
-                        _a.sent();
                         state.lastLunchSpot = selection;
                         r = new response_1.AlexaResponse();
                         r.setSpeech("How does " + selection.title + " sound?");
@@ -139,24 +136,21 @@ var BadIdeaIntent = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         r = new response_1.AlexaResponse();
-                        if (!state.lastLunchSpot) return [3 /*break*/, 4];
+                        if (!state.lastLunchSpot) return [3 /*break*/, 3];
                         return [4 /*yield*/, db.alterScore(state.lastLunchSpot.id, -1)];
                     case 1:
                         _a.sent();
                         return [4 /*yield*/, db.getRandomIdea()];
                     case 2:
                         selection = _a.sent();
-                        return [4 /*yield*/, db.setDate(selection.id)];
-                    case 3:
-                        _a.sent();
                         state.lastLunchSpot = selection;
                         r.setSpeech(this.getLessOftenPhrase() + " What about " + selection.title + "?");
                         r.setShouldEndSession(false);
-                        return [3 /*break*/, 5];
-                    case 4:
+                        return [3 /*break*/, 4];
+                    case 3:
                         r.setSpeech("I'm not sure which idea we were talking about.");
-                        _a.label = 5;
-                    case 5: return [2 /*return*/, r];
+                        _a.label = 4;
+                    case 4: return [2 /*return*/, r];
                 }
             });
         });

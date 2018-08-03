@@ -47,6 +47,9 @@ function getRandomIdea() {
                 case 1:
                     options = _a.sent();
                     selection = options[Math.floor(Math.random() * options.length)];
+                    return [4 /*yield*/, setDate(selection.id)];
+                case 2:
+                    _a.sent();
                     return [2 /*return*/, selection];
             }
         });

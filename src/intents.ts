@@ -41,7 +41,6 @@ export class GetIdeaIntent implements Intent {
 	async execute(state: State): Promise<AlexaResponse> {
 		// Pick a random one
 		const selection = await db.getRandomIdea();
-		await db.setDate(selection.id);
 		state.lastLunchSpot = selection;
 
 		// Respond
@@ -87,7 +86,6 @@ export class BadIdeaIntent implements Intent {
 			await db.alterScore(state.lastLunchSpot.id, -1);
 
 			const selection = await db.getRandomIdea();
-			await db.setDate(selection.id);
 			state.lastLunchSpot = selection;
 
 			r.setSpeech(`${this.getLessOftenPhrase()} What about ${selection.title}?`);

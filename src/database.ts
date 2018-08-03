@@ -7,6 +7,8 @@ export async function getRandomIdea(): Promise<LunchSpot> {
 
 	// Pick a random one
 	const selection = options[Math.floor(Math.random() * options.length)];
+	await setDate(selection.id);
+
 	return selection;
 }
 

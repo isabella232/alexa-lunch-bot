@@ -37,6 +37,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var response_1 = require("./response");
 var images_1 = require("./images");
+var request = require("request");
 var db = require("./database");
 var LaunchIntent = /** @class */ (function () {
     function LaunchIntent() {
@@ -190,6 +191,16 @@ var GoodIdeaIntent = /** @class */ (function () {
                         return [4 /*yield*/, db.alterScore(state.lastLunchSpot.id, 1)];
                     case 1:
                         _a.sent();
+                        if (process.env.SLACK_HOOK) {
+                            request({
+                                url: process.env.SLACK_HOOK,
+                                method: 'POST',
+                                json: true,
+                                body: {
+                                    text: "A lunch group is going to " + state.lastLunchSpot.title + ", probably."
+                                }
+                            });
+                        }
                         r.setSpeech(this.getMoreOftenPhrase());
                         r.setShouldEndSession(true);
                         return [3 /*break*/, 3];

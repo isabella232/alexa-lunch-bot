@@ -1,6 +1,7 @@
 import { AlexaResponse, BodyTemplate1, BodyTemplate2 } from './response';
 import { getRandomIcon, getRandomBackground } from './images';
 import { State } from './state';
+import * as request from 'request';
 import * as db from './database';
 
 export interface Intent {
@@ -119,6 +120,17 @@ export class GoodIdeaIntent implements Intent {
 
 		if (state.lastLunchSpot) {
 			await db.alterScore(state.lastLunchSpot.id, 1);
+
+			if (process.env.SLACK_HOOK) {
+				request({
+					url: process.env.SLACK_HOOK,
+					method: 'POST',
+					json: true,
+					body: {
+						text: `A lunch group is going to ${state.lastLunchSpot.title}, probably.`
+					}
+				});
+			}
 
 			r.setSpeech(this.getMoreOftenPhrase());
 			r.setShouldEndSession(true);

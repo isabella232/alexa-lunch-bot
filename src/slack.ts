@@ -10,7 +10,7 @@ const ideaPhrases = [
 	'hyly',
 	'where'
 ];
-var lastEventId = "";
+var previousEvents = {};
 
 function sendSlackText(msg: string) {
 	console.log(`Posting to slack: ${msg}`);
@@ -42,13 +42,14 @@ router.post('/', async (req, res) => {
 		return;
 	}
 
-	if (payload.event.type === "app_mention" && payload.event_id !== lastEventId) {
-		lastEventId = payload.event_id;
+	if (payload.event.type === "app_mention" && !previousEvents[payload.event_id]) {
+		previousEvents[payload.event_id] = true;
 
 		if (hasPhrase(payload.event.text, ideaPhrases)) {
 			const idea: LunchSpot = await db.getRandomIdea();
 			sendSlackText(`Go to ${idea.title}!`);
 			res.send();
+			return;
 		}
 	}
 });

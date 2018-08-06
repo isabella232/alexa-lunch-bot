@@ -47,7 +47,7 @@ var ideaPhrases = [
     'hyly',
     'where'
 ];
-var lastEventId = "";
+var previousEvents = {};
 function sendSlackText(msg) {
     console.log("Posting to slack: " + msg);
     request({
@@ -77,15 +77,15 @@ router.post('/', function (req, res) { return __awaiter(_this, void 0, void 0, f
                     res.send({ challenge: payload.challenge });
                     return [2 /*return*/];
                 }
-                if (!(payload.event.type === "app_mention" && payload.event_id !== lastEventId)) return [3 /*break*/, 2];
-                lastEventId = payload.event_id;
+                if (!(payload.event.type === "app_mention" && !previousEvents[payload.event_id])) return [3 /*break*/, 2];
+                previousEvents[payload.event_id] = true;
                 if (!hasPhrase(payload.event.text, ideaPhrases)) return [3 /*break*/, 2];
                 return [4 /*yield*/, db.getRandomIdea()];
             case 1:
                 idea = _a.sent();
                 sendSlackText("Go to " + idea.title + "!");
                 res.send();
-                _a.label = 2;
+                return [2 /*return*/];
             case 2: return [2 /*return*/];
         }
     });
